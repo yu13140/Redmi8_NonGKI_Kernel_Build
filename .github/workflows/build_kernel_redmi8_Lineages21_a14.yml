@@ -17,7 +17,7 @@ env:
   GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
   GENERATE_CHIP: "qcom" # only supported for qcom and mediatek.
   BUILD_DEBUGGER: "false" # Output build errors.
-  BUILD_OTHER_CONFIG: "false" # Merge config files.
+  BUILD_OTHER_CONFIG: "true" # Merge config files.
 
 
 jobs:
@@ -523,6 +523,7 @@ jobs:
           cd $GITHUB_WORKSPACE/device_kernel/
           make clean
           sudo apt-get install -y build-essential binutils-aarch64-linux-gnu
+          wget --output-document=./arch/arm64/configs/fix.config https://raw.githubusercontent.com/yu13140/KernelSU_susfs_Action/refs/heads/1/sdm439_fix.config
           if [ -z "${{ env.GCC_32 }}" ] && [ -z "${{ env.GCC_64 }}" ]; then
             make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.DEFCONFIG_NAME }}
             if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
