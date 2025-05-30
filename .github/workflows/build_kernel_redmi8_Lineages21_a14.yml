@@ -1,4 +1,4 @@
-name: Build Kernel Redmi 8 (LineageOS 21 Android 14) with KSU and SUSFS
+name: Build Kernel Redmi 8 (LineageOS 22.2 Android 15) with KSU and SUSFS
 on:
   workflow_call:
   workflow_dispatch:
@@ -518,7 +518,7 @@ jobs:
 
       - name: Build Kernel
         run: |
-          MERGE_CONFIG_FILES=("vendor/debugfs.config" "vendor/lahaina_QGKI.config")
+          MERGE_CONFIG_FILES=("vendor/common.config" "vendor/xiaomi/sdm439/mi439.config" "fix.config")
           export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
           cd $GITHUB_WORKSPACE/device_kernel/
           make clean
