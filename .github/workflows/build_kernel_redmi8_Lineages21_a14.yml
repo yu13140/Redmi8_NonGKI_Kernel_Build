@@ -410,7 +410,7 @@ jobs:
       - name: Extra Kernel Options
         run: |
           # Only ${{ env.DEVICE_NAME }} use it.
-          cd $GITHUB_WORKSPACE/device_kernel
+          cd $GITHUB_WORKSPACE/device_kernel          
           # echo "CONFIG_CPU_BIG_ENDIAN=n" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
           # echo "CONFIG_COMPAT_VDSO=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
           # echo "CONFIG_LTO_NONE=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
@@ -509,6 +509,16 @@ jobs:
             done
             false
           fi
+          
+      - name: Extra Kernel Options
+        run: |
+          # Only ${{ env.DEVICE_NAME }} use it.
+          cd $GITHUB_WORKSPACE/device_kernel
+          sed -i '$(info Building with ccflags-y: $(ccflags-y))' makefile
+          echo "====cat makefile===="
+          cat makefile
+          echo "=======end========"
+          make SUBDIRS=techpack/xiaomi-sdm439/touchscreen/FT8006S V=1          
 
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
