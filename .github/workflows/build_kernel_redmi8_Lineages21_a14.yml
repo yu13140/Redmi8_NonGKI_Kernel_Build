@@ -520,7 +520,8 @@ jobs:
         run: |
           MERGE_CONFIG_FILES=("vendor/common.config" "vendor/xiaomi/sdm439/mi439.config" "fix.config")
           export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
-          cd $GITHUB_WORKSPACE/device_kernel/
+          cd $GITHUB_WORKSPACE/device_kernel/          
+          ln -s techpack/xiaomi-sdm439/touchscreen/FT8006S/include/firmware include/firmware
           make clean
           sudo apt-get install -y build-essential binutils-aarch64-linux-gnu
           wget --output-document=./arch/arm64/configs/fix.config https://raw.githubusercontent.com/yu13140/KernelSU_susfs_Action/refs/heads/1/sdm439_fix.config
