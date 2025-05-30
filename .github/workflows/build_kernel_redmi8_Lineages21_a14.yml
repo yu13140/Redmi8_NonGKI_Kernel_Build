@@ -510,15 +510,11 @@ jobs:
             false
           fi
           
-      - name: Extra Kernel Options
+      - name: debug
         run: |
           # Only ${{ env.DEVICE_NAME }} use it.
-          cd $GITHUB_WORKSPACE/device_kernel
-          sed -i '$(info Building with ccflags-y: $(ccflags-y))' makefile
-          echo "====cat makefile===="
-          cat makefile
-          echo "=======end========"
-          make SUBDIRS=techpack/xiaomi-sdm439/touchscreen/FT8006S V=1          
+          cd $GITHUB_WORKSPACE/device_kernel          
+          make SUBDIRS=techpack/xiaomi-sdm439/touchscreen/FT8006S V=1
 
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
