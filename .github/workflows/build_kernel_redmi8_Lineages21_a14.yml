@@ -521,7 +521,7 @@ jobs:
           MERGE_CONFIG_FILES=("vendor/common.config" "vendor/xiaomi/sdm439/mi439.config" "fix.config")
           export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
           cd $GITHUB_WORKSPACE/device_kernel/          
-          ln -s techpack/xiaomi-sdm439/touchscreen/FT8006S/include/firmware include/firmware
+          sudo chmod a+r ./techpack/xiaomi-sdm439/touchscreen/FT8006S/include/firmware/fw_sample.i
           make clean
           sudo apt-get install -y build-essential binutils-aarch64-linux-gnu
           wget --output-document=./arch/arm64/configs/fix.config https://raw.githubusercontent.com/yu13140/KernelSU_susfs_Action/refs/heads/1/sdm439_fix.config
@@ -559,8 +559,7 @@ jobs:
                     ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/arm64/configs/$FILES
                 done
                 make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} olddefconfig
-            fi
-            make SUBDIRS=techpack/xiaomi-sdm439/touchscreen/FT8006S V=1
+            fi          
             make -j$(nproc --all) CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }}
           fi
 
