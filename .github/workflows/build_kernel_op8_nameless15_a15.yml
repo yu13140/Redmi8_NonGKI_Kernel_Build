@@ -3,7 +3,7 @@ on:
   workflow_call:
   workflow_dispatch:
 env:
-  HOOK_METHOD: "normal" # manual hook method,can choice vfs and normal.
+  HOOK_METHOD: "normal" # manual hook method,can choice syscall and normal.
 
 jobs:
   build:
@@ -39,6 +39,7 @@ jobs:
               KERNELSU_NAME
               SUSFS_ENABLE
               SUSFS_FIXED
+              SUSFS_UPDATE
               AK3_SOURCE
               AK3_BRANCH
               BOOT_SOURCE
@@ -195,8 +196,12 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/device_kernel
           echo "CONFIG_KSU=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
+          if [[ "${{ env.KERNELSU_SOURCE }}" == *rsuntk* ]] || [[ "${{ env.KERNELSU_SOURCE }}" == *SukiSU* ]]; then
+            echo "CONFIG_KSU_MANUAL_HOOK=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
+          fi
           if [[ "${{ env.SUSFS_ENABLE }}" == "true" ]]; then
             echo "CONFIG_KSU_SUSFS=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
+            echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
             echo "CONFIG_KSU_SUSFS_HAS_MAGIC_MOUNT=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
             echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
             echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
@@ -283,42 +288,32 @@ jobs:
                   cd device_kernel
                   bash normal_patches.sh
                   echo "execuated patch successfully."
-                  if [ $KERNEL -lt 5 ] && [ $PATCHLEVEL -lt 14 ]; then
-                      cp /tmp/Patches/extra_patches.sh ./
-                      bash extra_patches.sh
-                      echo "execuated extra patch successfully."
-                  else
-                      echo "your kernel needn't the patch."
-                  fi
                   if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
                       cp /tmp/Patches/backport_patches.sh ./
                       bash backport_patches.sh
                       echo "execuated backport patch successfully."
+                  else
+                      echo "your kernel needn't backport patch."
                   fi
               else
                   echo "Cannot found normal_patches.sh in build project , please check u file existed in build project !"
                   false
               fi
-            elif [[ ${{ env.HOOK_METHOD }} == "vfs" ]]; then
-              if [[ -f "/tmp/Patches/vfs_hook_patches.sh" ]]; then
-                  cp /tmp/Patches/vfs_hook_patches.sh device_kernel/
+            elif [[ ${{ env.HOOK_METHOD }} == "syscall" ]]; then
+              if [[ -f "/tmp/Patches/syscall_hook_patches.sh" ]]; then
+                  cp /tmp/Patches/syscall_hook_patches.sh device_kernel/
                   cd device_kernel
-                  bash vfs_hook_patches.sh
-                  echo "execuated vfs patch successfully."
-                  if [ $KERNEL -lt 5 ] && [ $PATCHLEVEL -lt 14 ]; then
-                      cp /tmp/Patches/extra_patches.sh ./
-                      bash extra_patches.sh
-                      echo "execuated extra patch successfully."
-                  else
-                      echo "your kernel needn't extra patch."
-                  fi
+                  bash syscall_hook_patches.sh
+                  echo "execuated syscall patch successfully."
                   if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
                       cp /tmp/Patches/backport_patches.sh ./
                       bash backport_patches.sh
                       echo "execuated backport patch successfully."
+                  else
+                      echo "your kernel needn't backport patch."
                   fi
               else
-                  echo "Cannot found vfs_hook_patches.sh in build project , please check u file existed in build project !"
+                  echo "Cannot found syscall_hook_patches.sh in build project , please check u file existed in build project !"
                   false
               fi
             else
@@ -402,6 +397,26 @@ jobs:
 
           patch -p1 < namespace_fixed.patch || true
           patch -p1 < task_mmu_fixed.patch || true
+
+          # Upgrade SUSFS Version
+          cp /tmp/Patches/Patch/susfs_upgrade_to_157.patch ./
+          cp NonGKI_Kernel_Patches/kona_oos/susfs_upgrade_fixed.patch ./
+
+          patch -p1 < susfs_upgrade_to_157.patch || true
+          patch -p1 < susfs_upgrade_fixed.patch || true
+
+      - name: Updated SUSFS Version
+        if: env.SUSFS_ENABLE == 'true' && env.SUSFS_UPDATE == 'true'
+        run: |
+          cd $GITHUB_WORKSPACE/device_kernel/
+          cp /tmp/Patches/Patch/susfs_upgrade_to_157.patch ./
+
+          patch -p1 < susfs_upgrade_to_157.patch || true
+
+          # Extra SUSFS Patch
+          # cp NonGKI_Kernel_Patches/[patch_folder]/[patch_file].patch ./
+
+          # patch -p1 < [patch_file].patch || true
 
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2

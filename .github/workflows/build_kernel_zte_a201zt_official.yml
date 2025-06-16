@@ -7,7 +7,7 @@ env:
   KERNELSU_METHOD: "shell" # shell, manual and only.
   PATCHES_SOURCE: "author/source" # [your_name]/[your_patch] -> gooder123/NonGKI_Patcher
   PATCHES_BRANCH: "branch" # [your_branch] -> main
-  HOOK_METHOD: "normal" # manual hook method,can choice vfs and normal.
+  HOOK_METHOD: "normal" # manual hook method,can choice syscall and normal.
   PROFILE_NAME: "zte_a201zt_official.env" # your profile name.
   KERNELSU_SUS_PATCH: "false" # if u need manual susfs patch to kernelsu.
 
@@ -311,34 +311,32 @@ jobs:
                   cd device_kernel
                   bash normal_patches.sh
                   echo "execuated patch successfully."
-                  if [ $KERNEL -lt 5 ] && [ $PATCHLEVEL -lt 14 ]; then
-                      cp /tmp/Patches/extra_patches.sh device_kernel/
-                      cd device_kernel
-                      bash extra_patches.sh
-                      echo "execuated extra patch successfully."
+                  if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
+                      cp /tmp/Patches/backport_patches.sh ./
+                      bash backport_patches.sh
+                      echo "execuated backport patch successfully."
                   else
-                      echo "your kernel needn't the patch."
+                      echo "your kernel needn't backport patch."
                   fi
               else
                   echo "Cannot found normal_patches.sh in build project , please check u file existed in build project !"
                   false
               fi
-            elif [[ ${{ env.HOOK_METHOD }} == "vfs" ]]; then
-              if [[ -f "/tmp/Patches/vfs_hook_patches.sh" ]]; then
-                  cp /tmp/Patches/vfs_hook_patches.sh device_kernel/
+            elif [[ ${{ env.HOOK_METHOD }} == "syscall" ]]; then
+              if [[ -f "/tmp/Patches/syscall_hook_patches.sh" ]]; then
+                  cp /tmp/Patches/syscall_hook_patches.sh device_kernel/
                   cd device_kernel
-                  bash vfs_hook_patches.sh
-                  echo "execuated vfs patch successfully."
-                  if [ $KERNEL -lt 5 ] && [ $PATCHLEVEL -lt 14 ]; then
-                      cp /tmp/Patches/extra_patches.sh device_kernel/
-                      cd device_kernel
-                      bash extra_patches.sh
-                      echo "execuated extra patch successfully."
+                  bash syscall_hook_patches.sh
+                  echo "execuated syscall patch successfully."
+                  if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
+                      cp /tmp/Patches/backport_patches.sh ./
+                      bash backport_patches.sh
+                      echo "execuated backport patch successfully."
                   else
-                      echo "your kernel needn't extra patch."
+                      echo "your kernel needn't backport patch."
                   fi
               else
-                  echo "Cannot found vfs_hook_patches.sh in build project , please check u file existed in build project !"
+                  echo "Cannot found syscall_hook_patches.sh in build project , please check u file existed in build project !"
                   false
               fi
             else

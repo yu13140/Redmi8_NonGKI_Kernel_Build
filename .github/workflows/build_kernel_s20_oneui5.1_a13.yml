@@ -2,6 +2,8 @@ name: Build Kernel Samsung S20 5G (OneUI 5.1) (Snapdragon Only) with KSU and SUS
 on:
   workflow_call:
   workflow_dispatch:
+env:
+  HOOK_METHOD: "normal" # manual hook method,can choice syscall and normal.
 
 jobs:
   build:
@@ -271,24 +273,47 @@ jobs:
           KERNEL=$(echo "${{ env.KERNEL_VERSION }}" | awk -F '.' '{print $1}')
           PATCHLEVEL=$(echo "${{ env.KERNEL_VERSION }}" | awk -F '.' '{print $2}')
 
-          if [[ -f "/tmp/Patches/normal_patches.sh" ]]; then
-            cp /tmp/Patches/normal_patches.sh device_kernel/
-            cd device_kernel
-            bash normal_patches.sh
-            if [ $KERNEL -lt 5 ] && [ $PATCHLEVEL -lt 14 ]; then
-                cp /tmp/Patches/extra_patches.sh device_kernel/
-                cd device_kernel
-                bash extra_patches.sh
-            else
-                echo "your kernel needn't the patch."
-            fi
-            if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
-                cp /tmp/Patches/backport_patches.sh ./
-                bash backport_patches.sh
-                echo "execuated backport patch successfully."
-            fi
+          if grep -q "CONFIG_KSU" "device_kernel/fs/exec.c"; then
+            echo "Your kernel source code appears to have been manually patched, so this step is skipped."
           else
-            echo "Cannot found normal_patches.sh in build project , please check u file existed in build project !"
+            if [[ ${{ env.HOOK_METHOD }} == "normal" ]]; then
+              if [[ -f "/tmp/Patches/normal_patches.sh" ]]; then
+                  cp /tmp/Patches/normal_patches.sh device_kernel/
+                  cd device_kernel
+                  bash normal_patches.sh
+                  echo "execuated patch successfully."
+                  if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
+                      cp /tmp/Patches/backport_patches.sh ./
+                      bash backport_patches.sh
+                      echo "execuated backport patch successfully."
+                  else
+                      echo "your kernel needn't backport patch."
+                  fi
+              else
+                  echo "Cannot found normal_patches.sh in build project , please check u file existed in build project !"
+                  false
+              fi
+            elif [[ ${{ env.HOOK_METHOD }} == "syscall" ]]; then
+              if [[ -f "/tmp/Patches/syscall_hook_patches.sh" ]]; then
+                  cp /tmp/Patches/syscall_hook_patches.sh device_kernel/
+                  cd device_kernel
+                  bash syscall_hook_patches.sh
+                  echo "execuated syscall patch successfully."
+                  if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
+                      cp /tmp/Patches/backport_patches.sh ./
+                      bash backport_patches.sh
+                      echo "execuated backport patch successfully."
+                  else
+                      echo "your kernel needn't backport patch."
+                  fi
+              else
+                  echo "Cannot found syscall_hook_patches.sh in build project , please check u file existed in build project !"
+                  false
+              fi
+            else
+              echo "please input vaild option!"
+              false
+            fi
           fi
 
       - name: Extra Kernel Options

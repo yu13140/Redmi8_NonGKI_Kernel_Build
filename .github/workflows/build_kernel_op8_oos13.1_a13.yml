@@ -2,6 +2,8 @@ name: Build Kernel OnePlus 8 (OOS13.1) with KSU and SUSFS
 on:
   workflow_call:
   workflow_dispatch:
+env:
+  HOOK_METHOD: "syscall" # manual hook method,can choice syscall and normal.
 
 jobs:
   build:
@@ -36,12 +38,12 @@ jobs:
               KERNELSU_NAME
               SUSFS_ENABLE
               SUSFS_FIXED
+              SUSFS_UPDATE
               AK3_SOURCE
               AK3_BRANCH
               ROM_TEXT
 
           )
-          ls -al ./
 
           for CONFIG in "${CONFIG_LIST[@]}"; do
               if [[ "$CONFIG" == "EXTRA_CMDS" || "$CONFIG" == "CUSTOM_CMDS" ]]; then
@@ -50,6 +52,9 @@ jobs:
                   echo "$CONFIG=$(grep -w "$CONFIG" "$CONFIG_ENV" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
               fi
           done
+
+          # Move patch folder to tmp
+          mv $GITHUB_WORKSPACE/Patches /tmp/
 
       - name: Maximize build space
         uses: easimon/maximize-build-space@master
@@ -188,16 +193,51 @@ jobs:
 
       - name: Patch Kernel for no-kprobe
         run: |
-          cd $GITHUB_WORKSPACE/device_kernel
-          if [[ -d "NonGKI_Kernel_Patches" ]]; then
-            echo "Folder existed."
+          cd $GITHUB_WORKSPACE
+          KERNEL=$(echo "${{ env.KERNEL_VERSION }}" | awk -F '.' '{print $1}')
+          PATCHLEVEL=$(echo "${{ env.KERNEL_VERSION }}" | awk -F '.' '{print $2}')
+          if grep -q "CONFIG_KSU" "device_kernel/fs/exec.c"; then
+            echo "Your kernel source code appears to have been manually patched, so this step is skipped."
           else
-            git clone https://github.com/JackA1ltman/NonGKI_Kernel_Patches.git -b op_kernel NonGKI_Kernel_Patches
+            if [[ ${{ env.HOOK_METHOD }} == "normal" ]]; then
+              if [[ -f "/tmp/Patches/normal_patches.sh" ]]; then
+                  cp /tmp/Patches/normal_patches.sh device_kernel/
+                  cd device_kernel
+                  bash normal_patches.sh
+                  echo "execuated patch successfully."
+                  if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
+                      cp /tmp/Patches/backport_patches.sh ./
+                      bash backport_patches.sh
+                      echo "execuated backport patch successfully."
+                  else
+                      echo "your kernel needn't backport patch."
+                  fi
+              else
+                  echo "Cannot found normal_patches.sh in build project , please check u file existed in build project !"
+                  false
+              fi
+            elif [[ ${{ env.HOOK_METHOD }} == "syscall" ]]; then
+              if [[ -f "/tmp/Patches/syscall_hook_patches.sh" ]]; then
+                  cp /tmp/Patches/syscall_hook_patches.sh device_kernel/
+                  cd device_kernel
+                  bash syscall_hook_patches.sh
+                  echo "execuated syscall patch successfully."
+                  if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
+                      cp /tmp/Patches/backport_patches.sh ./
+                      bash backport_patches.sh
+                      echo "execuated backport patch successfully."
+                  else
+                      echo "your kernel needn't backport patch."
+                  fi
+              else
+                  echo "Cannot found syscall_hook_patches.sh in build project , please check u file existed in build project !"
+                  false
+              fi
+            else
+              echo "please input vaild option!"
+              false
+            fi
           fi
-
-          cp NonGKI_Kernel_Patches/patches.sh ./
-
-          bash patches.sh
 
       - name: Extra Kernel Options
         run: |
@@ -225,11 +265,22 @@ jobs:
           cd $GITHUB_WORKSPACE/device_kernel/
           cp NonGKI_Kernel_Patches/kona_oos/namespace_fixed.patch ./
           cp NonGKI_Kernel_Patches/kona_oos/task_mmu_fixed.patch ./
-          cp NonGKI_Kernel_Patches/kona_oos/ksu_backport.patch ./
 
           patch -p1 < namespace_fixed.patch || true
           patch -p1 < task_mmu_fixed.patch || true
-          patch -p1 < ksu_backport.patch || true
+
+      - name: Updated SUSFS Version
+        if: env.SUSFS_ENABLE == 'true' && env.SUSFS_UPDATE == 'true'
+        run: |
+          cd $GITHUB_WORKSPACE/device_kernel/
+          cp /tmp/Patches/Patch/susfs_upgrade_to_157.patch ./
+
+          patch -p1 < susfs_upgrade_to_157.patch || true
+
+          # Extra SUSFS Patch
+          # cp NonGKI_Kernel_Patches/[patch_folder]/[patch_file].patch ./
+
+          # patch -p1 < [patch_file].patch || true
 
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2

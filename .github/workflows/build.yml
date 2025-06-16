@@ -42,6 +42,11 @@ on:
         required: true
         type: boolean
         default: true
+      build_kernel_mipad4p_lineage_a15:
+        description: "Build Kernel MiPad 4 (Plus) (LineageOS A15)?"
+        required: true
+        type: boolean
+        default: true
       make_release:
         description: "Do you want to create a release?"
         required: true
@@ -77,6 +82,10 @@ jobs:
     uses: ./.github/workflows/build_kernel_s20_oneui5.1_a13.yml
     secrets: inherit
     if: ${{ inputs.build_kernel_s20_oneui5_a13 }}
+  build_kernel_mipad4p_lineage_a15:
+    uses: ./.github/workflows/build_kernel_mipad4p_lineage_a15.yml
+    secrets: inherit
+    if: ${{ inputs.build_kernel_mipad4p_lineage_a15 }}
 
   trigger-release:
     runs-on: ubuntu-latest
@@ -88,6 +97,7 @@ jobs:
       - build_kernel_mi10s_aosp_a15
       - build_kernel_op8_nameless15_a15
       - build_kernel_s20_oneui5_a13
+      - build_kernel_mipad4p_lineage_a15
     if: ${{ inputs.make_release }}
     env:
       REPO_OWNER: JackA1ltman
@@ -97,20 +107,23 @@ jobs:
       RELEASE_NOTES: |
         Below is the codename reference table. Please select the image or archive you need based on this table.
 
-        | Device Name | Codename | Kernel | System | Android | Method | KernelSU | SuSFS | LXC | VFS |
+        | Device Name | Codename | Kernel | System | Android | Method | KernelSU | SuSFS | Re:Kernel | Syscall |
         |----------|----------|----------|----------|----------|----------|----------|----------|----------|----------|
-        | OnePlus 8  | instantnoodle | 4.19 | OxygenOS/ColorOS 13.1 | 13 | AnyKernel3 | Magic | ✅ | ❌ | ❌ |
+        | OnePlus 8  | instantnoodle | 4.19 | OxygenOS/ColorOS 13.1 | 13 | AnyKernel3 | Magic | ✅ | ❌ | ✅ |
         | OnePlus 8  | instantnoodle | 4.19 | Nameless 15 | 15 | AnyKernel3 | rsuntk | ✅ | ❌ | ❌ |
-        | Xiaomi MIX2S  | polaris | 4.9 | Evolution X 10.2.1 | 15 | Boot Image | SukiSU | ✅ | ❌ | ❌ |
-        | Redmi K20 Pro  | raphael | 4.14 | Based-AOSP | 15 | AnyKernel3 | rsuntk | ✅ | ❌ | ❌ |
-        | Black Shark 4 | penrose | 4.19 | MIUI/JoyUI 12 | 11 | AnyKernel3 | rsuntk | ❌ | ❌ | ✅ |
+        | Xiaomi MIX2S  | polaris | 4.9 | Evolution X 10.6 | 15 | AnyKernel3 | SukiSU(U) | ✅ | ✅ | ❌ |
+        | Redmi K20 Pro  | raphael | 4.14 | Based-AOSP | 15 | AnyKernel3 | rsuntk | ✅ | ❌ | ✅ |
+        | Black Shark 4 | penrose | 4.19 | MIUI/JoyUI 12 | 11 | AnyKernel3 | rsuntk | ❌ | ❌ | ❌ |
         | Xiaomi 10S | thyme | 4.19 | Based-AOSP | 15 | AnyKernel3 | rsuntk | ✅ | ❌ | ❌ |
         | Samsung S20 5G | x1q | 4.19 | OneUI 5.1/6.1 | 13/14 | Boot Image | rsuntk | ❌ | ❌ | ❌ |
+        | Xiaomi Pad 4(Plus) | clover | 4.19 | LineageOS 22.1 | 15 | AnyKernel3 | SukiSU(U) | ✅ | ❌ | ❌ |
 
         - OnePlus 8 (CN) has been tested and can be used on the OnePlus 9R. Theoretically, it should also work on the OnePlus 8T/8Pro.
-        - The Black Shark 4 cannot patch SuSFS due to a kernel defect (missing ANDROID_KABI). To enhance stealth and security, it is the first device to switch from the regular manual hook to [VFS Hook](https://github.com/backslashxx/KernelSU/issues/5).
+        - The Black Shark 4 cannot patch SuSFS due to a kernel defect (missing ANDROID_KABI). To enhance stealth and security, it is the first device to switch from the regular manual hook to [Syscall Hook](https://github.com/backslashxx/KernelSU/issues/5).
         - Samsung S20 5G supported **Snapdragon** only，Exynos doesn't try flash it.
+        - Xiaomi Mi Mix 2S has been backported to Cgroup V2, but Cgroup Freezer requires additional system steps to be used and the actual execution of the freezing process is abnormal. It is recommended to use Cgroup UID.
         - The KernelSU version is for reference only. It is normal for the KernelSU version embedded in SUSFS to be lower.
+        - [Re:Kernel](https://github.com/Sakion-Team/Re-Kernel) is a module used for quickly executing temporary unfreezing of processes during Binder transactions, but it may not necessarily work on all devices.
 
     steps:
       # Checkout the code
@@ -134,8 +147,8 @@ jobs:
             LATEST_TAG="v1.4" # if have no any releases.
           fi
 
-          # NEW_TAG=$(echo "$LATEST_TAG" | awk -F'-r' '{suffix=$2; if (!suffix) suffix=0; suffix++; printf "%s-r%d", $1, suffix}')
-          NEW_TAG="v1.4-r1"
+          NEW_TAG=$(echo "$LATEST_TAG" | awk -F'-r' '{suffix=$2; if (!suffix) suffix=0; suffix++; printf "%s-r%d", $1, suffix}')
+          # NEW_TAG="v1.5-r1"
 
           # Output the new tag to be used
           echo "New tag: $NEW_TAG"
@@ -154,11 +167,9 @@ jobs:
           # KSU_NEXT_VERSION=$(cd KernelSU-Next && expr $(/usr/bin/git rev-list --count HEAD) + 10200)
           git clone -b magic https://github.com/backslashxx/KernelSU.git KernelSU-Magic
           KSU_MAGIC_VERSION=$(cd KernelSU-Magic && expr $(/usr/bin/git rev-list --count HEAD) + 10200 - 32)
-          git clone -b main https://github.com/rsuntk/KernelSU.git KernelSU-rsuntk
+          git clone -b susfs-v1.5.7 https://github.com/rsuntk/KernelSU.git KernelSU-rsuntk
           KSU_RSUNTK_VERSION=$(cd KernelSU-rsuntk && expr $(/usr/bin/git rev-list --count HEAD) + 10200)
-          git clone -b non-gki https://github.com/lightsummer233/KernelSU.git KernelSU-lightsummer233
-          KSU_LIGHTSUMMER233_VERSION=$(cd KernelSU-lightsummer233 && expr $(/usr/bin/git rev-list --count HEAD) + 10200)
-          git clone -b susfs-dev https://github.com/ShirkNeko/SukiSU-Ultra.git KernelSU-SukiSU-Ultra
+          git clone -b susfs-main https://github.com/ShirkNeko/SukiSU-Ultra.git KernelSU-SukiSU-Ultra
           KSU_SUKISU_ULTRA_VERSION=$(cd KernelSU-SukiSU-Ultra && expr $(/usr/bin/git rev-list --count HEAD) + 10200)
 
           # Input release note
@@ -168,7 +179,6 @@ jobs:
           echo "[KernelSU-Next](https://github.com/KernelSU-Next/KernelSU-Next) Not Supported ❌ !  " >> $GITHUB_ENV
           echo "[KernelSU-Magic](https://github.com/backslashxx/KernelSU) Version: $KSU_MAGIC_VERSION  " >> $GITHUB_ENV
           echo "[KernelSU-rsuntk](https://github.com/rsuntk/KernelSU) Version: $KSU_RSUNTK_VERSION  " >> $GITHUB_ENV
-          echo "[KernelSU-lightsummer233](https://github.com/lightsummer233/KernelSU) Version: $KSU_LIGHTSUMMER233_VERSION  " >> $GITHUB_ENV
           echo "[KernelSU-SukiSU-Ultra](https://github.com/ShirkNeko/SukiSU-Ultra) Version: $KSU_SUKISU_ULTRA_VERSION  " >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 

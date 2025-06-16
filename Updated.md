@@ -1,4 +1,455 @@
 ## 项目更新日志
+- **Ver.1.5 Fixed 17**
+    - 修正 发布列表 文本错误
+    - 增加 红米 K40 Gaming MIUI13 A12 设备
+    - 增加 红米 K40 Gaming HyperOS A13 设备
+    - 增加 支持列表 新设备词条
+
+- **Ver.1.5 Fixed 16**
+    - 修正 发布列表 SukiSU-Ultra 链接指向错误
+    - 删除 发布列表 KernelSU分支lightsummer233
+
+- **Ver.1.5 Fixed 15**
+    - 修正 支持列表 发布列表 小米Mix2s 打包方式
+
+- **Ver.1.5 Fixed 14**
+    - 修正 小米Mix2s YAML 完整打包功能
+
+- **Ver.1.5 Fixed 13**
+    - 撤回 小米Mix2s HOOK_METHOD为syscall
+
+- **Ver.1.5 Fixed 12**
+    - 移植 小米Mix2s YAML 完整打包功能
+    - 更新 小米Mix2s YAML no-kprobe功能为最新版
+    - 切换 小米Mix2s HOOK_METHOD为syscall
+    - 切换 小米Mix2s 打包方式为Anykernel3
+
+- **Ver.1.5 Fixed 11**
+    - 增加 check_error.sh 错误类型判断和建议
+
+- **Ver.1.5 Fixed 10**
+    - 增加 OPPO K10E 设备
+
+- **Ver.1.5 Fixed 9**
+    - 撤回 小米11 HyperOS A14 设备
+    - 修正 支持列表 小米11 Ultra HyperOS A14 设备命名
+
+- **Ver.1.5 Fixed 8**
+    - 修正 使用SukiSU-Ultra(SUSFS) ENV文件 切换至susfs-main
+    - 增加 支持列表 红米 Note8Pro MIUI12 A11 设备 和 小米11 HyperOS A14 设备
+
+- **Ver.1.5 Fixed 7**
+    - 增加 红米 Note8Pro MIUI12 A11 设备
+    - 增加 小米11 HyperOS A14 设备
+
+- **Ver.1.5 Fixed 6**
+    - 修正 编译错误后依然判定成功以及BUILD_DEBUGGER功能优化
+
+- **Ver.1.5 Fixed 5**
+    - 增加 backport_patches_newer.sh
+    - 增加 Patch/backport_kernel_read_and_kernel_write_to_ksu.patch
+    - 增加 说明文件 部分新补丁说明
+    - 增加 示例YAML 有关新补丁执行的更多判断以及新变量
+
+- **Ver.1.5 Fixed 4**
+    - 移植 一加8 OOS13 no-kprobe完整步骤
+    - 移植 一加8 OOS13 Updated SUSFS Version 步骤
+    - 切换 一加8 OOS13 将HOOK_METHOD改成syscall
+    - 启用 一加8 OOS13 Updated SUSFS Version
+    - 启用 一加8 Nameless Updated SUSFS Version
+    - 修正 支持列表 一加8 OOS13 和 一加8 Nameless Syscall 状态
+    - 修正 发布列表 一加8 OOS13 和 一加8 Nameless Syscall 状态
+
+- **Ver.1.5 Fixed 3**
+    - 增加 syscall_hook_patches.sh 有关walk_component的修补和sys_execve的修补
+    - 增加 syscall 相关说明内容
+
+- **Ver.1.5 Fixed 2**
+    - 修正 found_gcc.sh 设定变量异常
+    - 修正 check_error.sh 部分文本
+    - 增加 示例YAML文件 Analyze compile error步骤有关检测错误自动判定失败
+
+- **Ver.1.5 Fixed 1**
+    - 修正 说明文件 有关KPM Patcher相关说明
+    - 撤回 发布Tag至 1.5-r1
+
+- **Ver.1.5**
+    - 重命名 backport_set_memory.patch set_memory_to_49_and_low.patch
+    - 创建 Patch 目录
+    - 移动 set_memory_to_49_and_low.patch 至 Patch 目录
+    - 移动 susfs_upgrade_to_157.patch 至 Patch 目录
+    - 增加 示例YAML文件 获取内核版本变量全局化
+    - 增加 示例YAML文件 KPM Checker功能增加反向移植set_memory部分
+    - 增加 found_gcc.sh
+    - 增加 示例YAML文件 自动化检测GCC前缀名
+    - 增加 说明文件 有关 found_gcc.sh 相关说明
+    - 增加 check_error.sh
+    - 增加 说明文件 有关 check_error.sh 相关说明
+    - 增加 示例YAML文件 Analyze compile error步骤
+    - 修正 set_memory_to_49_and_low.patch 部分缺少修补和错误修补
+    - 修正 说明文件 补丁相关调整内容
+    - 修正 示例YAML文件 有关DTBO生成功能
+    - 修正 示例YAML文件 有关内核版本获取及判断内容
+    - 修正 所有YAML文件 SUSFS更新补丁所在目录地址错误
+    - 修正 小米Mix2s 有关set_memory相关功能的修改
+    - 修改 发布Tag至 1.5-r1
+    - 删除 说明文件 temp_dtbo.patch词条
+    - 删除 temp_dtbo.patch
+
+---
+
+- **Ver.1.4 Fixed 91**
+    - 修正 说明文件 HOOK_METHOD说明错误
+
+- **Ver.1.4 Fixed 90**
+    - 修正 黑鲨4 HOOK_METHOD为normal
+    - 修正 发布列表 黑鲨4 修补方式为normal
+    - 修正 支持列表 有关syscall的说明
+
+- **Ver.1.4 Fixed 89**
+    - 修正 支持列表 将vfs更名syscall
+    - 修正 发布列表 将vfs更名syscall
+
+- **Ver.1.4 Fixed 88**
+    - 重命名 vfs_hook_patches.sh syscall_hook_patches.sh
+    - 重命名 说明文件 vfs_hook_patches.sh syscall_hook_patches.sh
+    - 合并 normal_patches.sh extra_patches.sh
+    - 增加 syscall_hook_patches.sh 有关hooks.c相关Patch
+    - 增加 说明文件 normal_patches.sh 有关hooks.c的内容和参考链接
+    - 增加 三星 S20 YAML HOOK_METHOD变量
+    - 修正 syscall_hook_patches.sh 判断方式
+    - 修正 说明文件 syscall_hook_patches.sh 有关hooks.c相关内容
+    - 修正 所有YAML文件 Patch no-kprobe 功能
+    - 修正 支持列表 将vfs更名syscall并增加名词相关链接
+    - 修正 红米 K20 Pro 将normal更改为syscall
+    - 删除 extra_patches.sh
+    - 删除 说明文件 有关extra_patches.sh有关内容
+
+- **Ver.1.4 Fixed 87**
+    - 放弃 小米8 NGK
+
+- **Ver.1.4 Fixed 86**
+    - 修正 示例YAML文件 生成DTB 对vendor目录下生成的寻址错误
+    - 修正 示例YAML文件 检测Proton并设置CROSS_COMPILE的编写错误
+    - 修正 一加9 Pro OOS11 Lily 生成DTB 对vendor目录下生成的寻址错误
+    - 修正 小米8 NGK 检测Proton并设置CROSS_COMPILE的编写错误
+
+- **Ver.1.4 Fixed 85**
+    - 增加 小米8 NGK
+
+- **Ver.1.4 Fixed 84**
+    - 修正 示例YAML 生成DTB 对于.dtb存在文件夹的检测顺序
+    - 修正 一加9 Pro OOS11 Lily 生成DTB 对于.dtb存在文件夹的检测顺序
+
+- **Ver.1.4 Fixed 83**
+    - 修正 支持列表 部分KernelSU分支信息
+
+- **Ver.1.4 Fixed 82**
+    - 启用 一加9 Pro OOS11 Lily 生成DTB
+
+- **Ver.1.4 Fixed 81**
+    - 修正 小米8 Lawrun 编译错误
+
+- **Ver.1.4 Fixed 80**
+    - 切换 小米Mix2 MIUI12.5 YAML 至 Arch Linux YAML
+
+- **Ver.1.4 Fixed 79**
+    - 增加 示例YAML文件 GCC针对tar.xz格式的支持
+    - 修正 说明文件 有关GCC的tar.xz格式的支持说明
+    - 移植 小米Mix2 MIUI12.5 GCC针对tar.xz格式的支持
+
+- **Ver.1.4 Fixed 78**
+    - 修正 小米8 MIUI12 标题错误
+
+- **Ver.1.4 Fixed 77**
+    - 修正 小米Mix2 MIUI12.5 编译错误
+    - 修正 小米8 Lawrun 编译错误
+    - 修正 小米6 MIUI12 编译错误
+    - 修正 一加9 Pro OOS11 Omega 编译错误
+    - 修正 小米8 MIUI12 未开启SUSFS导致编译错误
+
+- **Ver.1.4 Fixed 76**
+    - 切换 小米8 MIUI12 KernelSU分支切换至rsuntk
+    - 切换 小米8 Lawrun KernelSU分支切换至rsuntk
+    - 切换 小米6 MIUI12 KernelSU分支切换至rsuntk
+    - 切换 一加9 Pro OOS11 Lily KernelSU分支切换至rsuntk
+    - 切换 一加9 Pro OOS11 Omega KernelSU分支切换至rsuntk
+    - 修正 小米Mix2 MIUI12.5 编译错误
+
+- **Ver.1.4 Fixed 75**
+    - 增加 小米8 MIUI12
+    - 增加 小米8 Lawrun
+    - 增加 小米6 MIUI12
+    - 增加 小米Mix2 MIUI12.5
+    - 增加 一加9 Pro OOS11 Lily
+    - 增加 一加9 Pro OOS11 Omega
+
+- **Ver.1.4 Fixed 74**
+    - 关闭 小米Mix2s LXC功能
+    - 修正 OPPO K9 Pro 编译错误
+
+- **Ver.1.4 Fixed 73**
+    - 修正 OPPO K9 Pro 标题
+    - 修正 OPPO K9 Pro 编译错误
+
+- **Ver.1.4 Fixed 72**
+    - 修正 示例YAML 对于 ARMV7A设备 的部分判定
+    - 修正 LG Nexus 5 YAML 对于 ARMV7A设备 的部分判定
+
+- **Ver.1.4 Fixed 71**
+    - 增加 支持列表 LG Nexus 5 设备
+    - 修正 LG Nexus 5 YAML 标题错误
+
+- **Ver.1.4 Fixed 70**
+    - 增加 支持列表 有关 ARMV7A设备 的 KernelSU分支 支持情况
+    - 增加 示例YAML 有关 ARMV7A 利用 Anykernel3 打包的检测
+    - 增加 LG Nexus 5 设备
+    - 修正 extra_patches.sh ARMV7A设备 修补错误
+    - 修正 backport_patches.sh ARMV7A设备 修补错误
+    - 修正 示例ENV文件 默认 GCC_32 获取地址
+
+- **Ver.1.4 Fixed 69**
+    - 修正 说明文件 有关 no-kprobe 部分说明
+
+- **Ver.1.4 Fixed 68**
+    - 增加 backport_patches.sh 对 ARMV7A设备 的支持
+    - 增加 vfs_hook_patches.sh 对 ARMV7A设备 的支持
+    - 增加 extra_patches.sh 对 ARMV7A设备 的支持
+    - 增加 示例YAML 对 ARMV7A设备 的支持
+    - 修正 说明文件 有关 Patch脚本 的部分说明
+
+- **Ver.1.4 Fixed 67**
+    - 增加 说明文件 Patches/补丁介绍.patch 部分
+    - 增加 说明文件 有关Patch Kernel部分说明
+    - 增加 normal_patches.sh 作者
+    - 修正 说明文件 部分说明内容纰漏
+    - 修正 支持列表 有关VFS Hook说明
+
+- **Ver.1.4 Fixed 66**
+    - 增加 小米Mix2s wireguard fixed 补丁
+    - 启用 小米Mix2s wireguard相关config项
+
+- **Ver.1.4 Fixed 65**
+    - 增加 OPPO K9 Pro KPM相关config项
+    - 撤回 小米Mix2s wireguard相关config项
+
+- **Ver.1.4 Fixed 64**
+    - 增加 小米Mix2s Defconfig项
+
+- **Ver.1.4 Fixed 63**
+    - 增加 支持列表 新机型 OPPO K9 Pro
+    - 修正 OPPO K9 Pro YAML文件 和 ENV文件 部分文本
+
+- **Ver.1.4 Fixed 62**
+    - 修正 示例YAML 有关获取SUSFS的判定错误问题
+
+- **Ver.1.4 Fixed 61**
+    - 增加 小米Mix2s Zram Writeback defconfig项
+
+- **Ver.1.4 Fixed 60**
+    - 增加 小米Mix2s Simple LMK 补丁
+
+- **Ver.1.4 Fixed 59**
+    - 启用 小米Mix2s LZ4KD 补丁
+
+- **Ver.1.4 Fixed 58**
+    - 修复 小米Mix2s 编译问题
+
+- **Ver.1.4 Fixed 57**
+    - 撤回 小米Mix2s LZ4KD 补丁
+
+- **Ver.1.4 Fixed 56**
+    - 撤回 小米Mix2s YAML 合并config功能
+    - 修改 小米Mix2s Defconfig文件指向
+
+- **Ver.1.4 Fixed 55**
+    - 修改 小米Mix2s Defconfig文件指向
+    - 移植 小米Mix2s YAML 合并config功能
+    - 增加 小米Mix2s 有关LZ4KD额外选项
+
+- **Ver.1.4 Fixed 54**
+    - 增加 小米Mix2s LZ4KD 补丁
+
+- **Ver.1.4 Fixed 53**
+    - 修改 支持列表 小米Mix2s 系统版本号
+    - 修改 发布列表 小米Mix2s 系统版本号
+
+- **Ver.1.4 Fixed 52**
+    - 修改 支持列表 小米Mix2s Rekernel状态
+    - 修改 发布列表 小米Mix2s Rekernel状态
+
+- **Ver.1.4 Fixed 51**
+    - 增加 说明文件 对于Rekernel的补充说明
+
+- **Ver.1.4 Fixed 50**
+    - 增加 Rekernel 4.9内核 经过binder修补后使用补丁
+    - 修改 小米Mix2s Rekernel 补丁至binder修补版本
+
+- **Ver.1.4 Fixed 49**
+    - 增加 支持列表 小米Mix2s 有关Cgroup相关内容
+    - 增加 发布列表 小米Mix2s 有关Cgroup相关内容
+    - 增加 小米Mix2s Binder_Freezer 补丁
+
+- **Ver.1.4 Fixed 48**
+    - 增加 小米Mix2s Cgroup V2 补丁
+
+- **Ver.1.4 Fixed 47**
+    - 删除 build_checker.sh 脚本
+    - 增加 Rekernel 相关Patch
+    - 增加 示例YAML Rekernel修补步骤
+    - 增加 说明文件 Rekernel相关内容
+    - 增加 支持列表 Rekernel相关内容
+    - 增加 发布列表 Rekernel相关内容
+    - 修改 发布列表 将LXC状态修改为Re:Kernel状态
+    - 移植 小米Mix2s Rekernel修补步骤
+
+- **Ver.1.4 Fixed 46**
+    - 增加 支持列表 地区显示
+    - 修改 中兴 A201ZT 设备名称
+
+- **Ver.1.4 Fixed 45**
+    - 修改 支持列表 部分说明内容并将部分机型从Beta转为Stable维护状态
+
+- **Ver.1.4 Fixed 44**
+    - 增加 谷歌Pixel 9 Series Image文件lz4压缩方式
+
+- **Ver.1.4 Fixed 43**
+    - 增加 示例YAML文件 有关KPM CONFIG项额外需求判定
+    - 移植 小米平板4(Plus) YAML 有关KPM CONFIG项额外需求判定
+
+- **Ver.1.4 Fixed 42**
+    - 更新 一加8 OOS13 的KernelSU分支
+    - 增加 小米平板4(Plus) YAML SUSFS更新步骤
+
+- **Ver.1.4 Fixed 41**
+    - 修改 支持列表 小米Mix2s KPM支持
+
+- **Ver.1.4 Fixed 40**
+    - 增加 小米Mix2s KPM Fixed补丁
+
+- **Ver.1.4 Fixed 39**
+    - 增加 示例YAML文件 KPM Patch默认链接
+    - 修改 说明文件 有关KPM变量的说明
+    - 移植 小米Mix2s KPM相关功能
+    - 删除 Older YAML 无效变量
+
+- **Ver.1.4 Fixed 38**
+    - 修正 示例YAML SUSFS更新无法执行的错误
+    - 修正 小米Mix2s SUSFS更新无法执行的错误
+
+- **Ver.1.4 Fixed 37**
+    - 修改 支持列表 有关SUSFS更新的说明
+    - 增加 示例YAML文件 SUSFS更新步骤
+    - 增加 示例ENV文件 SUSFS更新步骤所需变量
+    - 增加 说明文件 有关SUSFS更新的说明
+    - 增加 英文说明文件 缺失的内容
+    - 启用 小米Mix2s SUSFS更新至v1.5.7补丁
+
+- **Ver.1.4 Fixed 36**
+    - 修改 支持列表 有关SUSFS更新的说明
+
+- **Ver.1.4 Fixed 35**
+    - 修正 支持列表 黑鲨4 对应KernelSU分支错误
+    - 修正 发布列表 黑鲨4 对应KernelSU分支错误
+
+- **Ver.1.4 Fixed 34**
+    - 增加 小米Mix2s 有关手动修补所需config项目的判定
+    - 增加 一加8 Nameless 有关手动修补所需config项目的判定
+    - 切换 一加8 Nameless KernelSU分支至susfs-v1.5.7
+    - 启用 一加8 Nameless SUSFS更新至v1.5.7补丁
+
+- **Ver.1.4 Fixed 33**
+    - 增加 示例YAML文件 有关手动修补所需config项目的判定
+    - 增加 小米平板4(Plus) 有关手动修补所需config项目的判定
+    - 增加 黑鲨4 有关手动修补所需config项目的判定
+    - 切换 黑鲨4 KernelSU分支至rsuntk
+    - 修改 支持列表 设备说明部分内容
+    - 修改 发布列表 设备说明部分内容
+
+- **Ver.1.4 Fixed 32**
+    - 修正 小米平板4(Plus) 设备编译错误问题
+    - 修正 小米Mix2s 设备编译错误问题
+
+- **Ver.1.4 Fixed 31**
+    - 修正 发布列表 设备说明部分内容
+    - 修正 支持列表 设备说明部分内容
+
+- **Ver.1.4 Fixed 30**
+    - 撤回 一加8 Nameless KernelSU分支至susfs-v1.5.7
+
+- **Ver.1.4 Fixed 29**
+    - 增加 支持列表 有关Non-GKI内核使用SUSFS v1.5.7的说明
+    - 切换 一加8 Nameless 从Beta状态转入Stable状态
+    - 增加 发布列表 有关黑鲨4机型的说明
+    - 增加 支持列表 有关黑鲨4机型的说明
+    - 增加 补丁 SUSFS更新至v1.5.7补丁
+    - 切换 一加8 Nameless KernelSU分支至susfs-v1.5.7
+    - 更新 一加8 Nameless SUSFS更新至v1.5.7
+    - 更新 红米 K20Pro SUSFS更新至v1.5.7
+    - 更新 小米 10S SUSFS更新至v1.5.7
+
+- **Ver.1.4 Fixed 28**
+    - 修正 发布列表 发布Tag错误
+
+- **Ver.1.4 Fixed 27**
+    - 切换 黑鲨4 KernelSU分支切换至magic
+
+- **Ver.1.4 Fixed 26**
+    - 更新 部分设备 KernelSU分支版本
+    - 将 小米平板4(Plus) 加入官方维护
+    - 修改 支持列表 中 小米平板4(Plus) 的顺位
+    - 修改 发布列表 部分KernelSU分支的获取版本
+
+- **Ver.1.4 Fixed 25**
+    - 切换 小米11 Ultra HyperOS A14 KernelSU分支至rsuntk
+    
+- **Ver.1.4 Fixed 24**
+    - 修正 示例YAML文件 对于Proton Clang的判定
+
+- **Ver.1.4 Fixed 23**
+    - 增加 Ubuntu 20.04 示例YAML文件 方案
+    - 增加 说明文件 部分内容
+
+- **Ver.1.4 Fixed 22**
+    - 修改 小米11 Ultra HyperOS A14 KernelSU分支
+
+- **Ver.1.4 Fixed 21**
+    - 修改 示例YAML文件 上传部分步骤名称
+
+- **Ver.1.4 Fixed 20**
+    - 修改 示例YAML文件 原始默认Free disk space方案使其可以获得更多的空间
+
+- **Ver.1.4 Fixed 19**
+    - 撤回 示例YAML文件 原始默认Free disk space方案
+    - 增加 小米11 Ultra Free disk space方案
+    - 完善 说明文件 部分内容的说明
+
+- **Ver.1.4 Fixed 18**
+    - 删除 示例YAML文件 原始默认Free disk space方案
+    - 增加 示例YAML文件 Remove useless tools方案用于释放空间
+    - 增加 示例YAML文件 对于释放空间的变量用于独立识别
+    - 增加 小米11 Ultra HyperOS A14 设备
+    - 完善 Backport patch补丁 对于5.4设备的判定和修补
+    - 增加 说明文件 对应的内容
+    - 增加 支持列表 新设备内容
+
+- **Ver.1.4 Fixed 17**
+    - 补充 说明文件 部分说明内容
+
+- **Ver.1.4 Fixed 16**
+    - 增加 示例YAML文件 对于KernelSU地址的判断
+
+- **Ver.1.4 Fixed 15**
+    - 切换 一加8 Realking KernelSU分支至SukiSU-Ultra
+
+- **Ver.1.4 Fixed 14**
+    - 增加 支持列表 部分文本说明
+    - 取消 支持列表 中 一加8 Realking 对VFS Hook的支持
+
+- **Ver.1.4 Fixed 13**
+    - 切换 一加8 OOS13 Kernel分支
+    - 增加 说明文件 对于KPM Patcher部分的说明
+
 - **Ver.1.4 Fixed 12**
     - 修改 示例YAML 中对KPM Hook执行的判定，从IF改为CASE
 

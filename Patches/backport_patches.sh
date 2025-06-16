@@ -1,16 +1,22 @@
 #!/bin/bash
-# Patches author: backslashxx @Github
-# Shell authon: JackA1ltman <cs2dtzq@163.com>
-# Tested kernel versions: 5.4, 4.19, 4.14, 4.9, 4.4
+# Patches author: backslashxx @ Github
+# Shell author: JackA1ltman <cs2dtzq@163.com>
+# Tested kernel versions: 5.4, 4.19, 4.14, 4.9, 4.4, 3.18, 3.10, 3.4
 # 20250323
 patch_files=(
     fs/namespace.c
     fs/internal.h
     kernel/cred.c
+    kernel/trace/bpf_trace.c
+    kernel/trace/trace_kprobe.c
     include/linux/cred.h
     include/linux/uaccess.h
     mm/maccess.c
 )
+
+KERNEL_VERSION=$(head -n 3 Makefile | grep -E 'VERSION|PATCHLEVEL' | awk '{print $3}' | paste -sd '.')
+FIRST_VERSION=$(echo "$KERNEL_VERSION" | awk -F '.' '{print $1}')
+SECOND_VERSION=$(echo "$KERNEL_VERSION" | awk -F '.' '{print $2}')
 
 for i in "${patch_files[@]}"; do
 
@@ -39,11 +45,11 @@ for i in "${patch_files[@]}"; do
         ;;
     ## fs/internal.h
     fs/internal.h)
-        KERNEL_VERSION=$(head -n 3 Makefile | grep -E 'VERSION|PATCHLEVEL' | awk '{print $3}' | paste -sd '.')
-        CHECK_VERSION=$(echo "$KERNEL_VERSION" | awk -F '.' '{print $2}')
-        if [ "$CHECK_VERSION" -le 9 ]; then
+        if [ "$SECOND_VERSION" -le 11 ]; then
             if grep -q "extern void __mnt_drop_write(struct vfsmount \*)" fs/internal.h; then
                 sed -i '/extern void __mnt_drop_write_file(struct file \*);/a int path_umount(struct path \*path, int flags);' fs/internal.h
+            elif [ "$FIRST_VERSION" -lt 4 ] && grep -q "extern void __init mnt_init(void)" fs/internal.h; then
+                sed -i '/extern void __init mnt_init(void);/a int path_umount(struct path *path, int flags);' fs/internal.h
             else
                 sed -i '/^extern void __init mnt_init/a int path_umount(struct path *path, int flags);' fs/internal.h
             fi
@@ -59,26 +65,74 @@ for i in "${patch_files[@]}"; do
             sed -i "s/!atomic_inc_not_zero(&((struct cred \*)cred)->usage)/!get_cred_rcu(cred)/g" kernel/cred.c
         fi
         ;;
+    ## kernel/trace
+    ### kernel/trace/bpf_trace.c
+    kernel/trace/bpf_trace.c)
+        if [ "$KERNEL_VERSION" == "5.4" ]; then
+            sed -i 's/\bstrncpy_from_unsafe_user\b/strncpy_from_user_nofault/g' kernel/trace/bpf_trace.c
+        fi
+        ;;
+    ### kernel/trace/trace_kprobe.c
+    kernel/trace/trace_kprobe.c)
+        if [ "$KERNEL_VERSION" == "5.4" ]; then
+            sed -i 's/\bstrncpy_from_unsafe_user\b/strncpy_from_user_nofault/g' kernel/trace/trace_kprobe.c
+        fi
+        ;;
 
     # include/ changes
     ## include/linux/cred.h
     include/linux/cred.h)
         if grep -q "atomic_long_inc_not_zero" include/linux/cred.h; then
             sed -i '/^static inline void put_cred/i static inline const struct cred *get_cred_rcu(const struct cred *cred)\n{\n\tstruct cred *nonconst_cred = (struct cred *) cred;\n\tif (!cred)\n\t\treturn NULL;\n\tif (!atomic_long_inc_not_zero(&nonconst_cred->usage))\n\t\treturn NULL;\n\tvalidate_creds(cred);\n\treturn cred;\n\}\n' include/linux/cred.h
+        elif [ "$FIRST_VERSION" -lt 4 ] && [ "$SECOND_VERSION" -lt 18 ]; then
+            sed -i '/static inline void put_cred(const struct cred \*_cred)/i \static inline const struct cred *get_cred_rcu(const struct cred *cred){\struct cred *nonconst_cred = (struct cred *) cred;\n\tif (!cred)\n\t\treturn NULL;\n\tif (!atomic_inc_not_zero(&nonconst_cred->usage))\n\t\treturn NULL;\n\tvalidate_creds(cred);\n\treturn cred;\n}' include/linux/cred.h
         else
             sed -i '/^static inline void put_cred/i static inline const struct cred *get_cred_rcu(const struct cred *cred)\n{\n\tstruct cred *nonconst_cred = (struct cred *) cred;\n\tif (!cred)\n\t\treturn NULL;\n\tif (!atomic_inc_not_zero(&nonconst_cred->usage))\n\t\treturn NULL;\n\tvalidate_creds(cred);\n\treturn cred;\n\}\n' include/linux/cred.h
         fi
         ;;
     ## include/linux/uaccess.h
     include/linux/uaccess.h)
-        sed -i 's/^extern long strncpy_from_unsafe_user/long strncpy_from_user_nofault/' include/linux/uaccess.h
+        if [ "$FIRST_VERSION" -lt 4 ] && [ "$SECOND_VERSION" -lt 18 ]; then
+            sed -i '/#endif\t\t\/\* ARCH_HAS_NOCACHE_UACCESS \*\//a long strncpy_from_user_nofault(char *dst, const void __user *unsafe_addr, long count);' include/linux/uaccess.h
+        else
+            sed -i 's/^extern long strncpy_from_unsafe_user/long strncpy_from_user_nofault/' include/linux/uaccess.h
+        fi
         ;;
 
     # mm/ changes
     ## mm/maccess.c
     mm/maccess.c)
-        sed -i 's/\* strncpy_from_unsafe_user: - Copy a NUL terminated string from unsafe user/\* strncpy_from_user_nofault: - Copy a NUL terminated string from unsafe user/' mm/maccess.c
-        sed -i 's/long strncpy_from_unsafe_user(char \*dst, const void __user \*unsafe_addr,/long strncpy_from_user_nofault(char *dst, const void __user *unsafe_addr,/' mm/maccess.c
+        if [ "$FIRST_VERSION" -lt 4 ] && [ "$SECOND_VERSION" -lt 18 ]; then
+            cat <<EOF >> mm/maccess.c
+long strncpy_from_user_nofault(char *dst, const void __user *unsafe_addr, long count)
+{
+	mm_segment_t old_fs = get_fs();
+	long ret;
+
+	if (unlikely(count <= 0))
+		return 0;
+
+	set_fs(USER_DS);
+	pagefault_disable();
+	ret = strncpy_from_user(dst, unsafe_addr, count);
+	pagefault_enable();
+	set_fs(old_fs);
+
+	if (ret >= count) {
+		ret = count;
+		dst[ret - 1] = '\0';
+	} else if (ret > 0) {
+		ret++;
+	}
+
+	return ret;
+}
+EOF
+
+        else
+            sed -i 's/\* strncpy_from_unsafe_user: - Copy a NUL terminated string from unsafe user/\* strncpy_from_user_nofault: - Copy a NUL terminated string from unsafe user/' mm/maccess.c
+            sed -i 's/long strncpy_from_unsafe_user(char \*dst, const void __user \*unsafe_addr,/long strncpy_from_user_nofault(char *dst, const void __user *unsafe_addr,/' mm/maccess.c
+        fi
         ;;
     esac
 

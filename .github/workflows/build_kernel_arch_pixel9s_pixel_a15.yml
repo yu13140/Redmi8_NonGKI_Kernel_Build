@@ -8,7 +8,7 @@ env:
   KERNELSU_METHOD: "shell" # shell, manual and only.
   PATCHES_SOURCE: "JackA1ltman/NonGKI_Kernel_Patches" # [your_name]/[your_patch] -> gooder123/NonGKI_Patcher
   PATCHES_BRANCH: "pixel_kernel" # [your_branch] -> main
-  HOOK_METHOD: "normal" # manual hook method,can choice vfs and normal.
+  HOOK_METHOD: "normal" # manual hook method,can choice syscall and normal.
   PROFILE_NAME: "zumapro_pixel_a15.env" # your profile name.
   KERNELSU_SUS_PATCH: "false" # if u need manual susfs patch to kernelsu.
   KPM_ENABLE: "false" # Only use it for SukiSU-Ultra.
@@ -80,7 +80,7 @@ jobs:
         run: |
           cat /etc/os-release
 
-          pacman -Syyu
+          pacman -Syyu --noconfirm
           pacman -S git base-devel systemd wget rustup curl patch ccache automake flex lzop bison gperf zip curl bzip2 squashfs-tools pngcrush schedtool make optipng maven pwgen minicom bc unzip 7zip zstd binutils gcc python3 wget which --noconfirm
 
           # Update Rust Toolchain
@@ -304,42 +304,32 @@ jobs:
                   cd device_kernel
                   bash normal_patches.sh
                   echo "execuated patch successfully."
-                  if [ $KERNEL -lt 5 ] && [ $PATCHLEVEL -lt 14 ]; then
-                      cp /tmp/Patches/extra_patches.sh ./
-                      bash extra_patches.sh
-                      echo "execuated extra patch successfully."
-                  else
-                      echo "your kernel needn't the patch."
-                  fi
                   if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
                       cp /tmp/Patches/backport_patches.sh ./
                       bash backport_patches.sh
                       echo "execuated backport patch successfully."
+                  else
+                      echo "your kernel needn't backport patch."
                   fi
               else
                   echo "Cannot found normal_patches.sh in build project , please check u file existed in build project !"
                   false
               fi
-            elif [[ ${{ env.HOOK_METHOD }} == "vfs" ]]; then
-              if [[ -f "/tmp/Patches/vfs_hook_patches.sh" ]]; then
-                  cp /tmp/Patches/vfs_hook_patches.sh device_kernel/
+            elif [[ ${{ env.HOOK_METHOD }} == "syscall" ]]; then
+              if [[ -f "/tmp/Patches/syscall_hook_patches.sh" ]]; then
+                  cp /tmp/Patches/syscall_hook_patches.sh device_kernel/
                   cd device_kernel
-                  bash vfs_hook_patches.sh
-                  echo "execuated vfs patch successfully."
-                  if [ $KERNEL -lt 5 ] && [ $PATCHLEVEL -lt 14 ]; then
-                      cp /tmp/Patches/extra_patches.sh ./
-                      bash extra_patches.sh
-                      echo "execuated extra patch successfully."
-                  else
-                      echo "your kernel needn't extra patch."
-                  fi
+                  bash syscall_hook_patches.sh
+                  echo "execuated syscall patch successfully."
                   if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
                       cp /tmp/Patches/backport_patches.sh ./
                       bash backport_patches.sh
                       echo "execuated backport patch successfully."
+                  else
+                      echo "your kernel needn't backport patch."
                   fi
               else
-                  echo "Cannot found vfs_hook_patches.sh in build project , please check u file existed in build project !"
+                  echo "Cannot found syscall_hook_patches.sh in build project , please check u file existed in build project !"
                   false
               fi
             else
@@ -357,6 +347,7 @@ jobs:
           echo "CONFIG_KPROBES=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
           echo "CONFIG_MODULES=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
           echo "CONFIG_KSU_SUSFS_SUS_SU=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
+          sed -i '1i #include <linux/magic.h>' fs/susfs.c
 
       - name: Added mkdtboimg to kernel (Experiment)
         if: env.HAVE_NO_DTBO == 'true' && env.HAVE_NO_DTBO_TOOL != 'true'
@@ -559,6 +550,9 @@ jobs:
           elif [[ -f "$IMAGE_DIR/Image.gz" ]]; then
             cp -fp $IMAGE_DIR/Image.gz tmp
             echo "Found Image.gz !"
+          elif [[ -f "$IMAGE_DIR/Image.lz4" ]]; then
+            cp -fp $IMAGE_DIR/Image.lz4 tmp
+            echo "Found Image.lz4 !"
           elif [[ -f "$IMAGE_DIR/Image" ]]; then
             # gzip -c $IMAGE_DIR/Image > $IMAGE_DIR/Image.gz
             # cp -fp $IMAGE_DIR/Image.gz tmp
