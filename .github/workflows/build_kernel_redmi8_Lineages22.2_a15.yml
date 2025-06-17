@@ -681,7 +681,7 @@ jobs:
             mkdir dtbo_tool
             cd dtbo_tool
             wget https://android.googlesource.com/platform/system/libufdt/+archive/master/utils.tar.gz -o mkdtboimg.tar.gz
-            tar zxvf mkdtboimg.tar.gz
+            tar -zxvf mkdtboimg.tar.gz
             cd ../
             if [ -d "$GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dts/vendor" ]; then
                 python dtbo_tool/src/mkdtboimg.py create $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dtbo.img $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dts/vendor/${{ env.GENERATE_CHIP }}/*.dtbo
