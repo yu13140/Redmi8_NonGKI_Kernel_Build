@@ -628,9 +628,13 @@ jobs:
         run: |
           MERGE_CONFIG_FILES=("vendor/common.config" "sdm439_fix.config")
           export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
+          if [[ -f "/tmp/Patches/lolz_defconfig" ]]; then
+            sudo cp /tmp/Patches/lolz_defconfig $GITHUB_WORKSPACE/device_kernel/arch/arm64/configs/
+          else
+            wget -O $GITHUB_WORKSPACE/device_kernel/arch/arm64/configs/ https://github.com/yu13140/Redmi8_NonGKI_Kernel_Build/raw/refs/heads/main/Patches/lolz_defconfig
+          fi
           cd $GITHUB_WORKSPACE/device_kernel/
-          sudo chmod 777 ./techpack/xiaomi-sdm439/touchscreen/FT8006S/include/firmware/fw_sample.i
-          sudo cp ../tmp/Patches/lolz_defconfig arch/arm64/configs/
+          sudo chmod 777 ./techpack/xiaomi-sdm439/touchscreen/FT8006S/include/firmware/fw_sample.i          
           sudo apt-get install -y build-essential binutils-aarch64-linux-gnu
           if [ -z "${{ env.GCC_32 }}" ] && [ -z "${{ env.GCC_64 }}" ]; then
             make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.DEFCONFIG_NAME }}
