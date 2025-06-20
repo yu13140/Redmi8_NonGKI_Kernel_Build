@@ -250,7 +250,7 @@ jobs:
           cd device_kernel
           git submodule deinit KernelSU || true
           git rm --cached KernelSU || true
-          git rm -rf KernelSU
+          git rm -rf KernelSU || true
           cd ..
           if [[ -n "${{ env.DEFCONFIG_SOURCE }}" ]]; then
             if [[ -d "device_kernel/arch/arm64/configs" ]]; then
