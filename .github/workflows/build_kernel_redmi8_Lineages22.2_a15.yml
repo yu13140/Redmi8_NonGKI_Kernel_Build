@@ -246,7 +246,7 @@ jobs:
       - name: Get Kernel Source
         run: |
           cd $GITHUB_WORKSPACE
-          git clone --recursive ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_BRANCH }} device_kernel --depth=1
+          git clone --recursive ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_BRANCH }} device_kernel
           cd device_kernel
           git reset --hard 6c2b432b8fde744b552df6559a93266e4e194df8
           cd ..
