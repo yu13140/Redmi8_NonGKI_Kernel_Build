@@ -248,9 +248,9 @@ jobs:
           cd $GITHUB_WORKSPACE
           git clone --recursive ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_BRANCH }} device_kernel
           cd device_kernel
-          git submodule deinit KernelSU || true
-          git rm --cached KernelSU || true
-          git rm -rf KernelSU || true
+          git submodule deinit KernelSU-Next || true
+          git rm --cached KernelSU-Next || true
+          git rm -rf KernelSU-Next || true
           cd ..
           if [[ -n "${{ env.DEFCONFIG_SOURCE }}" ]]; then
             if [[ -d "device_kernel/arch/arm64/configs" ]]; then
