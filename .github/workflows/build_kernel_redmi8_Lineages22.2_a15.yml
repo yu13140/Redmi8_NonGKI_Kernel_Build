@@ -18,7 +18,7 @@ env:
   GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
   GENERATE_CHIP: "xiaomi-sdm439" # only supported for qcom and mediatek.
   BUILD_DEBUGGER: "false" # Output build errors.
-  BUILD_OTHER_CONFIG: "true" # Merge config files.
+  BUILD_OTHER_CONFIG: "false" # Merge config files.
   FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
   REKERNEL_ENABLE: "false" # if u need Re:Kernel.
 
@@ -630,6 +630,7 @@ jobs:
           export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
           cd $GITHUB_WORKSPACE/device_kernel/
           sudo chmod 777 ./techpack/xiaomi-sdm439/touchscreen/FT8006S/include/firmware/fw_sample.i
+          sudo cp ../tmp/Patches/lolz_defconfig arch/arm64/configs/
           sudo apt-get install -y build-essential binutils-aarch64-linux-gnu
           if [ -z "${{ env.GCC_32 }}" ] && [ -z "${{ env.GCC_64 }}" ]; then
             make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.DEFCONFIG_NAME }}
