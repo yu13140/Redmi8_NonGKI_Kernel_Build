@@ -679,13 +679,7 @@ jobs:
           fi
 
           if grep -q "Error 2" "error.log"; then
-            echo "CONSTRUCT=error" >> $GITHUB_ENV
-            cd $GITHUB_WORKSPACE/device_kernel/
-            cp /tmp/Patches/pack_error.sh ./
-            bash pack_error.sh error.log
-            if [[ -f error_source.zip ]]; then
-              echo "PACK_ERROR=true" >> $GITHUB_ENV
-            fi
+            false
           fi
 
           ## Generate DTBO
@@ -704,12 +698,12 @@ jobs:
           fi
 
       - name: Upload Build Artifacts For Pack Error
-        if: env.BUILD_DEBUGGER == 'true' && env.PACK_ERROR == 'true'
+        if: env.BUILD_DEBUGGER == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: error.zip
           path: |
-            device_kernel/error_sources.zip
+            device_kernel/fs/namei.c
 
       - name: Analyze compile error
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
