@@ -474,7 +474,7 @@ jobs:
                   fi
               else
                   cd $GITHUB_WORKSPACE/device_kernel/
-                  cp /tmp/syscall_hooks.patch ./
+                  cp /tmp/Patches/syscall_hooks.patch ./
                   patch -p1 < syscall_hooks.patch || true
               fi
             else
