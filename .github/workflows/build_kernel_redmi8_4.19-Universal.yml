@@ -696,12 +696,12 @@ jobs:
           fi
 
       - name: Upload Build Artifacts For Packing Error
-        if: env.BUILD_DEBUGGER == 'true'
+        if: if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: error.zip
           path: |
-            device_kernel/fs/namei.c
+            $GITHUB_WORKSPACE/device_kernel/fs/namei.c
 
       - name: Analyze compile error
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
