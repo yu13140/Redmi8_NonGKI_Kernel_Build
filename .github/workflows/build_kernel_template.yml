@@ -17,6 +17,7 @@ env:
   GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
   GENERATE_CHIP: "qcom" # only supported for qcom and mediatek.
   BUILD_DEBUGGER: "false" # Output build errors.
+  SKIP_PATCH: "true" # Ignore errors found in Patch Debugger.
   BUILD_OTHER_CONFIG: "false" # Merge config files.
   FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
   REKERNEL_ENABLE: "false" # if u need Re:Kernel.
@@ -610,7 +611,10 @@ jobs:
                 cat $CAT_REJ
                 echo "==========EOF=========="
             done
-            false
+
+            if [[ "${{ env.SKIP_PATCH }}"  != "true" ]]; then
+              false
+            fi
           fi
 
       - name: Setup ccache
@@ -672,11 +676,11 @@ jobs:
           fi
 
           if grep -q "Error 2" "error.log"; then
-            false
+            echo "CONSTRUCT=error" >> $GITHUB_ENV
           fi
 
           ## Generate DTBO
-          if [ "${{ env.HAVE_NO_DTBO }}" == "true" ] && [ "${{ env.HAVE_NO_DTBO_TOOL }}" == "true" ]; then
+          if [ "${{ env.HAVE_NO_DTBO }}" == "true" ] && [ "${{ env.HAVE_NO_DTBO_TOOL }}" == "true" ] && [ "${{ env.CONSTRUCT }}" != "error" ]; then
             cd $GITHUB_WORKSPACE/device_kernel
             mkdir dtbo_tool
             cd dtbo_tool
