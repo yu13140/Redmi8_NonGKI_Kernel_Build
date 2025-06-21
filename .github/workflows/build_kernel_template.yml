@@ -703,7 +703,7 @@ jobs:
           bash check_error.sh
 
           if [ -f "have_error" ]; then
-            false            
+            false
           else
             echo "Skipped."
           fi

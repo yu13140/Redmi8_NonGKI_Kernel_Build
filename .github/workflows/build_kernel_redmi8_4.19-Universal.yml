@@ -17,7 +17,7 @@ env:
   KPM_PATCH_SOURCE: "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU_patch/refs/heads/main/kpm/patch_linux" # patch exec file source -> raw.githubusercontent.com/Test/Test/patch .
   GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
   GENERATE_CHIP: "xiaomi-sdm439" # only supported for qcom and mediatek.
-  BUILD_DEBUGGER: "true" # Output build errors.
+  BUILD_DEBUGGER: "false" # Output build errors.
   SKIP_PATCH: "true" # Ignore errors found in Patch Debugger.
   BUILD_OTHER_CONFIG: "false" # Merge config files.
   FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
@@ -315,7 +315,7 @@ jobs:
         run: |
           # Variable
           SUSFS_SOURCE=https://github.com/yu13140/susfs4ksu.git
-          SUSFS_BRANCH=kernel-${{ env.KERNEL_VERSION }}
+          SUSFS_BRANCH=4.19-1.5.7
 
           # Set ${{ env.PACK_METHOD }} and KernelSU
           if [[ ${{ env.PACK_METHOD }} == "Anykernel3" ]]; then
@@ -548,10 +548,8 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
           cp susfs4ksu/kernel_patches/50_add_susfs_in_kernel-${{ env.KERNEL_VERSION }}.patch ./
-          cp susfs4ksu/kernel_patches/kernel_4.19-Bump-SuSFS-version-to-v1.5.8.patch ./
 
           patch -p1 < 50_add_susfs_in_kernel-${{ env.KERNEL_VERSION }}.patch || true
-          patch -p1 < kernel_4.19-Bump-SuSFS-version-to-v1.5.8.patch || true
 
           if [[ "${{ env.KERNELSU_NAME }}"  == "KernelSU-Next" ]]; then
             if [[ "${{ env.KERNELSU_SOURCE }}" =~ ".sh" && "${{ env.KERNELSU_BRANCH }}" =~ "susfs" ]]; then
@@ -697,14 +695,6 @@ jobs:
             fi
           fi
 
-      - name: Upload Build Artifacts For Pack Error
-        if: env.BUILD_DEBUGGER == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: error.zip
-          path: |
-            device_kernel/fs/namei.c
-
       - name: Analyze compile error
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
         run: |
@@ -714,7 +704,7 @@ jobs:
           bash check_error.sh
 
           if [ -f "have_error" ]; then
-            false            
+            false
           else
             echo "Skipped."
           fi
