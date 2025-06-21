@@ -18,7 +18,7 @@ env:
   GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
   GENERATE_CHIP: "xiaomi-sdm439" # only supported for qcom and mediatek.
   BUILD_DEBUGGER: "true" # Output build errors.
-  SKIP_PATCH: "false" # Ignore errors found in Patch Debugger.
+  SKIP_PATCH: "true" # Ignore errors found in Patch Debugger.
   BUILD_OTHER_CONFIG: "false" # Merge config files.
   FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
   REKERNEL_ENABLE: "false" # if u need Re:Kernel.
@@ -315,7 +315,7 @@ jobs:
         run: |
           # Variable
           SUSFS_SOURCE=https://github.com/yu13140/susfs4ksu.git
-          SUSFS_BRANCH=4.19-1.5.7
+          SUSFS_BRANCH=kernel-${{ env.KERNEL_VERSION }}
 
           # Set ${{ env.PACK_METHOD }} and KernelSU
           if [[ ${{ env.PACK_METHOD }} == "Anykernel3" ]]; then
@@ -473,9 +473,8 @@ jobs:
                       echo "your kernel needn't backport patch."
                   fi
               else
-                  cd $GITHUB_WORKSPACE/device_kernel/
-                  cp /tmp/Patches/syscall_hooks.patch ./
-                  patch -p1 < syscall_hooks.patch || true
+                  echo "Cannot found syscall_hook_patches.sh in build project , please check u file existed in build project !"
+                  false
               fi
             else
               echo "please input vaild option!"
@@ -696,12 +695,13 @@ jobs:
             fi
           fi
 
-      - name: Upload Build Artifacts For Log
+      - name: Upload Build Artifacts For Packing Error
+        if: env.BUILD_DEBUGGER == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: error.zip
           path: |
-            device_kernel/error.log
+            device_kernel/fs/namei.c
 
       - name: Analyze compile error
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
