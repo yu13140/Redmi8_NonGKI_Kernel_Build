@@ -17,7 +17,7 @@ env:
   KPM_PATCH_SOURCE: "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU_patch/refs/heads/main/kpm/patch_linux" # patch exec file source -> raw.githubusercontent.com/Test/Test/patch .
   GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
   GENERATE_CHIP: "xiaomi-sdm439" # only supported for qcom and mediatek.
-  BUILD_DEBUGGER: "false" # Output build errors.
+  BUILD_DEBUGGER: "true" # Output build errors.
   BUILD_OTHER_CONFIG: "false" # Merge config files.
   FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
   REKERNEL_ENABLE: "false" # if u need Re:Kernel.
@@ -577,22 +577,6 @@ jobs:
             echo "Your kernel not supported it."
           fi
 
-      - name: Patch Debugger
-        if: env.BUILD_DEBUGGER == 'true'
-        run: |
-          cd $GITHUB_WORKSPACE/device_kernel/
-          mapfile -t REJ_FILES < <(find . -type f -name "*.rej")
-          if [ ${#REJ_FILES[@]} -eq 0 ]; then
-            echo "Your kernel have no any rej files."
-          else
-            for CAT_REJ in "${REJ_FILES[@]}"; do
-                echo "Found .rej file: $CAT_REJ"
-                cat $CAT_REJ
-                echo "==========EOF=========="
-            done
-            false
-          fi
-
       - name: Fixed Kernel Patch
         if: env.SUSFS_ENABLE == 'true' && env.SUSFS_FIXED == 'true'
         run: |
@@ -613,6 +597,22 @@ jobs:
           # cp NonGKI_Kernel_Patches/[patch_folder]/[patch_file].patch ./
 
           # patch -p1 < [patch_file].patch || true
+
+      - name: Patch Debugger
+        if: env.BUILD_DEBUGGER == 'true'
+        run: |
+          cd $GITHUB_WORKSPACE/device_kernel/
+          mapfile -t REJ_FILES < <(find . -type f -name "*.rej")
+          if [ ${#REJ_FILES[@]} -eq 0 ]; then
+            echo "Your kernel have no any rej files."
+          else
+            for CAT_REJ in "${REJ_FILES[@]}"; do
+                echo "Found .rej file: $CAT_REJ"
+                cat $CAT_REJ
+                echo "==========EOF=========="
+            done
+            false
+          fi
 
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
