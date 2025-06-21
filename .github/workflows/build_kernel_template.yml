@@ -676,6 +676,8 @@ jobs:
           fi
 
           if grep -q "Error 2" "error.log"; then
+            echo "==========EOF=========="
+            cat fs/namei.c
             false
           fi
 
