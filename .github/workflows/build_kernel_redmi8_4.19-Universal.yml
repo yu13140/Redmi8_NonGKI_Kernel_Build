@@ -473,8 +473,9 @@ jobs:
                       echo "your kernel needn't backport patch."
                   fi
               else
-                  echo "Cannot found syscall_hook_patches.sh in build project , please check u file existed in build project !"
-                  false
+                  cd $GITHUB_WORKSPACE/device_kernel/
+                  cp /tmp/syscall_hooks.patch ./
+                  patch -p1 < syscall_hooks.patch || true
               fi
             else
               echo "please input vaild option!"
@@ -694,6 +695,13 @@ jobs:
                 python dtbo_tool/src/mkdtboimg.py create $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dtbo.img $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dts/${{ env.GENERATE_CHIP }}/*.dtbo
             fi
           fi
+
+      - name: Upload Build Artifacts For Log
+        uses: actions/upload-artifact@v4
+        with:
+          name: error.zip
+          path: |
+            device_kernel/error.log
 
       - name: Analyze compile error
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
