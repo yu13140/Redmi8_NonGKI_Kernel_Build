@@ -1,4 +1,4 @@
-name: Build Kernel Redmi 8 (LineageOS 22.2 Android 15) with KSU and SUSFS
+name: Build Kernel Redmi 8 (Universal) with KSU and SUSFS
 on:
   workflow_call:
   workflow_dispatch:
@@ -7,11 +7,11 @@ env:
   PYTHON_VERSION: "3" # Only 2(Ubuntu 22.04) or 3(Any OS Versions).
   PACK_METHOD: "Anykernel3" # Anykernel3 need SOURCE and BRANCH, MKBOOTIMG needn't it.
   KERNELSU_METHOD: "shell" # shell, manual and only.
-  PATCHES_SOURCE: "ShirkNeko/SukiSU_patch" # [your_name]/[your_patch] -> gooder123/NonGKI_Patcher
+  PATCHES_SOURCE: "SukiSU-Ultra/SukiSU_patch" # [your_name]/[your_patch] -> gooder123/NonGKI_Patcher
   PATCHES_BRANCH: "main" # [your_branch] -> main
   HOOK_METHOD: "normal" # manual hook method,can choice syscall and normal.
   HOOK_NEWER: "false" # syscall can try it.
-  PROFILE_NAME: "olive_lineageos_a15.env" # your profile name.
+  PROFILE_NAME: "olive_universal.env" # your profile name.
   KERNELSU_SUS_PATCH: "false" # if u need manual susfs patch to kernelsu.
   KPM_ENABLE: "false" # Only use it for SukiSU-Ultra.
   KPM_PATCH_SOURCE: "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU_patch/refs/heads/main/kpm/patch_linux" # patch exec file source -> raw.githubusercontent.com/Test/Test/patch .
@@ -246,7 +246,7 @@ jobs:
       - name: Get Kernel Source
         run: |
           cd $GITHUB_WORKSPACE
-          git clone --recursive ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_BRANCH }} device_kernel --depth=1          
+          git clone --recursive ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_BRANCH }} device_kernel --depth=1
           if [[ -n "${{ env.DEFCONFIG_SOURCE }}" ]]; then
             if [[ -d "device_kernel/arch/arm64/configs" ]]; then
                 wget ${{ env.DEFCONFIG_SOURCE }} -O device_kernel/arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
@@ -594,10 +594,9 @@ jobs:
           fi
 
       - name: Fixed Kernel Patch
-        if: env.SUSFS_FIXED == 'true'
-        run: |          
+        if: env.SUSFS_ENABLE == 'true' && env.SUSFS_FIXED == 'true'
+        run: |
           cd $GITHUB_WORKSPACE/device_kernel/
-          git clone https://github.com/${{ env.PATCHES_SOURCE }}.git -b ${{ env.PATCHES_BRANCH }} NonGKI_Kernel_Patches --depth=1
           cp NonGKI_Kernel_Patches/4.19/ksu_hooks_sukisu_4.19.patch ./
 
           patch -p1 < ksu_hooks_sukisu_4.19.patch || true
@@ -623,16 +622,9 @@ jobs:
 
       - name: Build Kernel
         run: |
-          MERGE_CONFIG_FILES=("vendor/common.config" "sdm439_fix.config")
+          MERGE_CONFIG_FILES=("vendor/debugfs.config" "vendor/lahaina_QGKI.config")
           export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
-          if [[ -f "/tmp/Patches/lolz_defconfig" ]]; then
-            sudo cp /tmp/Patches/lolz_defconfig $GITHUB_WORKSPACE/device_kernel/arch/arm64/configs/
-          else
-            wget -O $GITHUB_WORKSPACE/device_kernel/arch/arm64/configs/ https://github.com/yu13140/Redmi8_NonGKI_Kernel_Build/raw/refs/heads/main/Patches/lolz_defconfig
-          fi
           cd $GITHUB_WORKSPACE/device_kernel/
-          sudo chmod 777 ./techpack/xiaomi-sdm439/touchscreen/FT8006S/include/firmware/fw_sample.i          
-          sudo apt-get install -y build-essential binutils-aarch64-linux-gnu
           if [ -z "${{ env.GCC_32 }}" ] && [ -z "${{ env.GCC_64 }}" ]; then
             make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.DEFCONFIG_NAME }}
             if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
@@ -680,6 +672,10 @@ jobs:
             make -j$(nproc --all) CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} 2>&1|tee error.log
           fi
 
+          if grep -q "Error 2" "error.log"; then
+            false
+          fi
+
           ## Generate DTBO
           if [ "${{ env.HAVE_NO_DTBO }}" == "true" ] && [ "${{ env.HAVE_NO_DTBO_TOOL }}" == "true" ]; then
             cd $GITHUB_WORKSPACE/device_kernel
@@ -693,10 +689,6 @@ jobs:
             else
                 python dtbo_tool/src/mkdtboimg.py create $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dtbo.img $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dts/${{ env.GENERATE_CHIP }}/*.dtbo
             fi
-          fi
-
-          if grep -q "Error 2" "error.log"; then
-            false
           fi
 
       - name: Analyze compile error
