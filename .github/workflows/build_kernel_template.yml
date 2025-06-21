@@ -704,6 +704,8 @@ jobs:
 
           if [ -f "have_error" ]; then
             false
+            cp /tmp/Patches/pack_error.sh ./
+            bash pack_error.sh error.log
           else
             echo "Skipped."
           fi
@@ -893,6 +895,14 @@ jobs:
           echo "PACK_NAME=${{ env.DEVICE_CODENAME }}-${{ env.ROM_TEXT }}-$TIME-image${{ env.LXC_STATUS }}.img" >> $GITHUB_ENV
 
           rm -f $GITHUB_WORKSPACE/boot_source_${{ env.DEVICE_NAME }}.img
+
+      - name: Upload Build Artifacts For Pack Error
+        if: env.BUILD_DEBUGGER == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: error.zip
+          path: |
+            device_kernel/error_sources.zip
 
       - name: Upload Build Artifacts For Anykernel3
         if: env.PACK_METHOD == 'Anykernel3'
