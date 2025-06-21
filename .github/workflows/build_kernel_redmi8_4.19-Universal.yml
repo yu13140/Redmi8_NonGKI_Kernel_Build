@@ -696,7 +696,7 @@ jobs:
           fi
 
       - name: Upload Build Artifacts For Packing Error
-        if: if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
+        if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: error.zip
