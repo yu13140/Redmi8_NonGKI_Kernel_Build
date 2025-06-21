@@ -631,7 +631,7 @@ jobs:
             cd $GITHUB_WORKSPACE/device_kernel
             mkdir dtbo_tool
             cd dtbo_tool
-            wget https://android.googlesource.com/platform/system/libufdt/+archive/master/utils.tar.gz -o mkdtboimg.tar.gz
+            wget https://android.googlesource.com/platform/system/libufdt/+archive/master/utils.tar.gz -O mkdtboimg.tar.gz
             tar zxvf mkdtboimg.tar.gz
             cd ../
             if [ -d "$GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dts/vendor" ]; then

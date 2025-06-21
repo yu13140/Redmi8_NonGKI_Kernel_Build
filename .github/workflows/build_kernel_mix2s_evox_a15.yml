@@ -223,8 +223,12 @@ jobs:
           # Patch Cgroup V2
           wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/cgroupv2_to_49.patch
           patch -p1 < cgroupv2_to_49.patch
+
+          # Patch Binder
           wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/binder_freezer_to_49.patch
           patch -p1 < binder_freezer_to_49.patch
+          # wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/binder_515_to_49.patch
+          # patch -p1 < binder_515_to_49.patch
 
           # Patch set_memory
           cp /tmp/Patches/Patch/set_memory_to_49_and_low.patch ./
@@ -236,7 +240,11 @@ jobs:
 
           # Patch Simple LMK
           wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/simple_lmk_to_49.patch
-          patch -p1 < simple_lmk_to_49.patch
+          patch -p1 < simple_lmk_to_49.patch  || true
+
+          # Fix Makefile
+          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/makefile_fixed.patch
+          patch -p1 < makefile_fixed.patch
 
           # KPM Checker
           if [[ -d "${{ env.KERNELSU_NAME }}/kernel/kpm" ]]; then
@@ -332,18 +340,22 @@ jobs:
         run: |
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel/
+
           # Additional functions
           ## BPF
           echo "CONFIG_BPF_JIT=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
           echo "CONFIG_BPF_JIT_ALWAYS_ON=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
+
           ## CPU
           echo "CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
+
           ## Network
           echo "CONFIG_TCP_CONG_ADVANCED=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
           echo "CONFIG_TCP_CONG_WESTWOOD=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
           echo "CONFIG_TCP_CONG_BBR=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
           echo "CONFIG_DEFAULT_BBR=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
           echo "CONFIG_WIREGUARD=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
+
           ## File
           echo "CONFIG_EXFAT_FS=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
           echo "CONFIG_NTFS_FS=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
@@ -361,6 +373,10 @@ jobs:
           echo "CONFIG_CGROUP_CPUACCT=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
           echo "CONFIG_CGROUP_SCHEDTUNE=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
 
+          # Binder
+          sed -i '/^CONFIG_ANDROID_BINDER_DEVICES="binder,hwbinder,vndbinder"$/d' ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
+          sed -i '/^CONFIG_DEBUG_FS=y$/d' ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
+
           # LZ4KD
           echo "CONFIG_CRYPTO_ZSTD=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
           echo "CONFIG_CRYPTO_LZ4K=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
@@ -372,7 +388,7 @@ jobs:
           echo "# CONFIG_MEMCG_SWAP_ENABLED is not set" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
           echo "CONFIG_ANDROID_SIMPLE_LMK=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
           echo "CONFIG_ANDROID_SIMPLE_LMK_AGGRESSION=1" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-          echo "CONFIG_ANDROID_SIMPLE_LMK_MINFREE=100" >> ./arch/arm64/configs/$
+          echo "CONFIG_ANDROID_SIMPLE_LMK_MINFREE=100" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
 
           # Zram Writeback
           echo "CONFIG_ZRAM_WRITEBACK=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}

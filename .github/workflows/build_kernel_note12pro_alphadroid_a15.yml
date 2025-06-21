@@ -1,25 +1,24 @@
-name: Build Kernel Redmi 8 (Universal) with KSU and SUSFS
+name: Build Kernel Redmi Note 12Pro (AlphaDroid A15) with KSU
 on:
   workflow_call:
   workflow_dispatch:
-  push:
 env:
   PYTHON_VERSION: "3" # Only 2(Ubuntu 22.04) or 3(Any OS Versions).
   PACK_METHOD: "Anykernel3" # Anykernel3 need SOURCE and BRANCH, MKBOOTIMG needn't it.
   KERNELSU_METHOD: "shell" # shell, manual and only.
-  PATCHES_SOURCE: "SukiSU-Ultra/SukiSU_patch" # [your_name]/[your_patch] -> gooder123/NonGKI_Patcher
-  PATCHES_BRANCH: "main" # [your_branch] -> main
-  HOOK_METHOD: "syscall" # manual hook method,can choice syscall and normal.
+  PATCHES_SOURCE: "author/source" # [your_name]/[your_patch] -> gooder123/NonGKI_Patcher
+  PATCHES_BRANCH: "branch" # [your_branch] -> main
+  HOOK_METHOD: "normal" # manual hook method,can choice syscall and normal.
   HOOK_NEWER: "false" # syscall can try it.
-  PROFILE_NAME: "olive_universal.env" # your profile name.
+  PROFILE_NAME: "ruby_alphadroid_a15.env" # your profile name.
   KERNELSU_SUS_PATCH: "false" # if u need manual susfs patch to kernelsu.
   KPM_ENABLE: "false" # Only use it for SukiSU-Ultra.
   KPM_PATCH_SOURCE: "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU_patch/refs/heads/main/kpm/patch_linux" # patch exec file source -> raw.githubusercontent.com/Test/Test/patch .
   GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
-  GENERATE_CHIP: "xiaomi-sdm439" # only supported for qcom and mediatek.
+  GENERATE_CHIP: "qcom" # only supported for qcom and mediatek.
   BUILD_DEBUGGER: "false" # Output build errors.
   BUILD_OTHER_CONFIG: "false" # Merge config files.
-  FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
+  FREE_MORE_SPACE: "true" # if u want get more space, enabled it.
   REKERNEL_ENABLE: "false" # if u need Re:Kernel.
 
 
@@ -313,8 +312,8 @@ jobs:
       - name: Set Pack Method and KernelSU and SUSFS
         run: |
           # Variable
-          SUSFS_SOURCE=https://github.com/yu13140/susfs4ksu.git
-          SUSFS_BRANCH=4.19-1.5.7
+          SUSFS_SOURCE=https://gitlab.com/simonpunk/susfs4ksu.git
+          SUSFS_BRANCH=kernel-${{ env.KERNEL_VERSION }}
 
           # Set ${{ env.PACK_METHOD }} and KernelSU
           if [[ ${{ env.PACK_METHOD }} == "Anykernel3" ]]; then
@@ -546,7 +545,7 @@ jobs:
         if: env.SUSFS_ENABLE == 'true'
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
-          cp susfs4ksu/kernel_patches/50_add_susfs_in_kernel-${{ env.KERNEL_VERSION }}.patch ./
+          cp susfs4ksu/kernel_patches/50_add_susfs_in_kernel-$KERNEL_VERSION.patch ./
 
           patch -p1 < 50_add_susfs_in_kernel-${{ env.KERNEL_VERSION }}.patch || true
 
@@ -577,27 +576,6 @@ jobs:
             echo "Your kernel not supported it."
           fi
 
-      - name: Fixed Kernel Patch
-        if: env.SUSFS_ENABLE == 'true' && env.SUSFS_FIXED == 'true'
-        run: |
-          cd $GITHUB_WORKSPACE/device_kernel/
-          cp NonGKI_Kernel_Patches/4.19/ksu_hooks_sukisu_4.19.patch ./
-
-          patch -p1 < ksu_hooks_sukisu_4.19.patch || true
-
-      - name: Updated SUSFS Version
-        if: env.SUSFS_ENABLE == 'true' && env.SUSFS_UPDATE == 'true'
-        run: |
-          cd $GITHUB_WORKSPACE/device_kernel/
-          cp /tmp/Patches/Patch/susfs_upgrade_to_157.patch ./
-
-          patch -p1 < susfs_upgrade_to_157.patch || true
-
-          # Extra SUSFS Patch
-          # cp NonGKI_Kernel_Patches/[patch_folder]/[patch_file].patch ./
-
-          # patch -p1 < [patch_file].patch || true
-
       - name: Patch Debugger
         if: env.BUILD_DEBUGGER == 'true'
         run: |
@@ -613,6 +591,27 @@ jobs:
             done
             false
           fi
+
+      - name: Fixed Kernel Patch
+        if: env.SUSFS_ENABLE == 'true' && env.SUSFS_FIXED == 'true'
+        run: |
+          cd $GITHUB_WORKSPACE/device_kernel/
+          cp NonGKI_Kernel_Patches/[patch_folder]/[patch_file].patch ./
+
+          patch -p1 < [patch_file].patch || true
+
+      - name: Updated SUSFS Version
+        if: env.SUSFS_ENABLE == 'true' && env.SUSFS_UPDATE == 'true'
+        run: |
+          cd $GITHUB_WORKSPACE/device_kernel/
+          cp /tmp/Patches/Patch/susfs_upgrade_to_157.patch ./
+
+          patch -p1 < susfs_upgrade_to_157.patch || true
+
+          # Extra SUSFS Patch
+          # cp NonGKI_Kernel_Patches/[patch_folder]/[patch_file].patch ./
+
+          # patch -p1 < [patch_file].patch || true
 
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
@@ -672,23 +671,23 @@ jobs:
             make -j$(nproc --all) CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} 2>&1|tee error.log
           fi
 
-          if grep -q "Error 2" "error.log"; then
-            false
-          fi
-
           ## Generate DTBO
           if [ "${{ env.HAVE_NO_DTBO }}" == "true" ] && [ "${{ env.HAVE_NO_DTBO_TOOL }}" == "true" ]; then
             cd $GITHUB_WORKSPACE/device_kernel
             mkdir dtbo_tool
             cd dtbo_tool
-            wget https://android.googlesource.com/platform/system/libufdt/+archive/master/utils.tar.gz -O mkdtboimg.tar.gz
-            tar -zxvf mkdtboimg.tar.gz
+            wget https://android.googlesource.com/platform/system/libufdt/+archive/master/utils.tar.gz -o mkdtboimg.tar.gz
+            tar zxvf mkdtboimg.tar.gz
             cd ../
             if [ -d "$GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dts/vendor" ]; then
                 python dtbo_tool/src/mkdtboimg.py create $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dtbo.img $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dts/vendor/${{ env.GENERATE_CHIP }}/*.dtbo
             else
                 python dtbo_tool/src/mkdtboimg.py create $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dtbo.img $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dts/${{ env.GENERATE_CHIP }}/*.dtbo
             fi
+          fi
+
+          if grep -q "Error 2" "error.log"; then
+            false
           fi
 
       - name: Analyze compile error
@@ -838,8 +837,13 @@ jobs:
           fi
 
           cp -rp ./Anykernel3/* tmp
+          cd tmp
+          7za a -mx9 tmp.zip *
+          cd ..
+          cp -fp tmp/tmp.zip ${{ env.DEVICE_CODENAME }}-${{ env.ROM_TEXT }}-$TIME-${{ env.PACK_METHOD }}${{ env.LXC_STATUS }}.zip
+          rm -rf tmp
 
-          echo "PACK_NAME=Kernel-${{ env.DEVICE_CODENAME }}-${{ env.ROM_TEXT }}-$TIME-${{ env.PACK_METHOD }}${{ env.LXC_STATUS }}.zip" >> $GITHUB_ENV
+          echo "PACK_NAME=${{ env.DEVICE_CODENAME }}-${{ env.ROM_TEXT }}-$TIME-${{ env.PACK_METHOD }}${{ env.LXC_STATUS }}.zip" >> $GITHUB_ENV
 
       - name: Make Latest Boot Image
         if: env.PACK_METHOD == 'MKBOOTIMG'
@@ -895,14 +899,14 @@ jobs:
         if: env.PACK_METHOD == 'Anykernel3'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.PACK_NAME }}
+          name: Kernel-${{ env.PACK_NAME }}
           path: |
-            device_kernel/tmp
+            device_kernel/${{ env.PACK_NAME }}
 
       - name: Upload Build Artifacts For Boot Image
         if: env.PACK_METHOD == 'MKBOOTIMG'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.PACK_NAME }}
+          name: Kernel-${{ env.PACK_NAME }}
           path: |
             ${{ env.PACK_NAME }}
