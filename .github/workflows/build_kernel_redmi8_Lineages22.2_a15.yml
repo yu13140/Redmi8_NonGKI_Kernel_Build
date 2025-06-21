@@ -547,10 +547,10 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
           cp susfs4ksu/kernel_patches/50_add_susfs_in_kernel-${{ env.KERNEL_VERSION }}.patch ./
-          cp susfs4ksu/kernel_patches/kernel_${{ env.KERNEL_VERSION }}-Bump-SuSFS-version-to-v1.5.8.patch ./
+          cp susfs4ksu/kernel_patches/kernel_4.19-Bump-SuSFS-version-to-v1.5.8.patch ./
 
           patch -p1 < 50_add_susfs_in_kernel-${{ env.KERNEL_VERSION }}.patch || true
-          patch -p1 < kernel_$${{ env.KERNEL_VERSION }}-Bump-SuSFS-version-to-v1.5.8.patch || true
+          patch -p1 < kernel_4.19-Bump-SuSFS-version-to-v1.5.8.patch || true
 
           if [[ "${{ env.KERNELSU_NAME }}"  == "KernelSU-Next" ]]; then
             if [[ "${{ env.KERNELSU_SOURCE }}" =~ ".sh" && "${{ env.KERNELSU_BRANCH }}" =~ "susfs" ]]; then
