@@ -314,7 +314,7 @@ jobs:
         run: |
           # Variable
           SUSFS_SOURCE=https://github.com/yu13140/susfs4ksu.git
-          SUSFS_BRANCH=1.5.7-4.19
+          SUSFS_BRANCH=4.19-1.5.7
 
           # Set ${{ env.PACK_METHOD }} and KernelSU
           if [[ ${{ env.PACK_METHOD }} == "Anykernel3" ]]; then
