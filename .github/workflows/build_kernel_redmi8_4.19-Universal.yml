@@ -700,13 +700,15 @@ jobs:
           fi
 
       - name: Upload Build Artifacts For Packing Error
+        if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: stat.c
           path: |
             device_kernel/fs/stat.c
             
-      - name: Upload Build Artifacts For Packing Error
+      - name: Upload Build Artifacts For Packing Error 2
+        if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: include
