@@ -701,9 +701,9 @@ jobs:
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
         uses: actions/upload-artifact@v4
         with:
-          name: namei.c
+          name: readdir.c
           path: |
-            device_kernel/fs/namei.c
+            device_kernel/fs/readdir.c
 
       - name: Analyze compile error
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
