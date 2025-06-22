@@ -486,8 +486,6 @@ jobs:
         run: |
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
-          cp NonGKI_Kernel_Patches/hooks/syscall_hooks.patch ./
-          patch -p1 < syscall_hooks.patch || true
           # Nothing
 
       - name: Added mkdtboimg to kernel (Experiment)
@@ -587,7 +585,9 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
           cp NonGKI_Kernel_Patches/4.19/ksu_hooks_sukisu_4.19.patch ./
+          cp NonGKI_Kernel_Patches/hooks/syscall_hooks.patch ./
 
+          patch -p1 < syscall_hooks.patch || true
           patch -p1 < ksu_hooks_sukisu_4.19.patch || true
 
       - name: Updated SUSFS Version
@@ -705,6 +705,13 @@ jobs:
           name: stat.c
           path: |
             device_kernel/fs/stat.c
+            
+      - name: Upload Build Artifacts For Packing Error
+        uses: actions/upload-artifact@v4
+        with:
+          name: include
+          path: |
+            device_kernel/include            
 
       - name: Analyze compile error
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
