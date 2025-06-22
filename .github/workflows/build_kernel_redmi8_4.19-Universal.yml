@@ -9,7 +9,7 @@ env:
   KERNELSU_METHOD: "shell" # shell, manual and only.
   PATCHES_SOURCE: "SukiSU-Ultra/SukiSU_patch" # [your_name]/[your_patch] -> gooder123/NonGKI_Patcher
   PATCHES_BRANCH: "main" # [your_branch] -> main
-  HOOK_METHOD: "manual" # manual hook method,can choice syscall and normal.
+  HOOK_METHOD: "syscall" # manual hook method,can choice syscall and normal.
   HOOK_NEWER: "false" # syscall can try it.
   PROFILE_NAME: "olive_4.19-universal.env" # your profile name.
   KERNELSU_SUS_PATCH: "false" # if u need manual susfs patch to kernelsu.
@@ -585,8 +585,10 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
           cp NonGKI_Kernel_Patches/4.19/ksu_hooks_sukisu_4.19.patch ./
+          cp NonGKI_Kernel_Patches/hooks/syscall_hooks.patch ./
 
           patch -p1 < syscall_hooks.patch || true
+          patch -p1 < ksu_hooks_sukisu_4.19.patch || true
 
       - name: Updated SUSFS Version
         if: env.SUSFS_ENABLE == 'true' && env.SUSFS_UPDATE == 'true'
