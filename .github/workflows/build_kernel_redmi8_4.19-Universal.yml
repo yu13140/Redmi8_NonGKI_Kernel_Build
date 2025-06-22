@@ -17,7 +17,7 @@ env:
   KPM_PATCH_SOURCE: "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU_patch/refs/heads/main/kpm/patch_linux" # patch exec file source -> raw.githubusercontent.com/Test/Test/patch .
   GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
   GENERATE_CHIP: "xiaomi-sdm439" # only supported for qcom and mediatek.
-  BUILD_DEBUGGER: "false" # Output build errors.
+  BUILD_DEBUGGER: "true" # Output build errors.
   SKIP_PATCH: "true" # Ignore errors found in Patch Debugger.
   BUILD_OTHER_CONFIG: "false" # Merge config files.
   FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
@@ -486,7 +486,7 @@ jobs:
         run: |
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
-          cp /tmp/Patches/syscall_hooks.patch ./
+          cp NonGKI_Kernel_Patches/hooks/syscall_hooks.patch ./
           patch -p1 < syscall_hooks.patch || true
           # Nothing
 
@@ -633,12 +633,6 @@ jobs:
           MERGE_CONFIG_FILES=("vendor/debugfs.config" "vendor/lahaina_QGKI.config")
           export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
           cd $GITHUB_WORKSPACE/device_kernel/
-          cp -f /tmp/Patches/readdir.c fs/readdir.c
-          sudo chmod 777 fs/readdir.c || true
-          cp -f /tmp/Patches/stat.c fs/stat.c
-          sudo chmod 777 fs/stat.c || true
-          cp -f /tmp/Patches/proc_namespace.c fs/proc_namespace.c
-          sudo chmod 777 fs/proc_namespace.c || true
           if [ -z "${{ env.GCC_32 }}" ] && [ -z "${{ env.GCC_64 }}" ]; then
             make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.DEFCONFIG_NAME }}
             if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
@@ -704,6 +698,13 @@ jobs:
                 python dtbo_tool/src/mkdtboimg.py create $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dtbo.img $GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dts/${{ env.GENERATE_CHIP }}/*.dtbo
             fi
           fi
+
+      - name: Upload Build Artifacts For Packing Error
+        uses: actions/upload-artifact@v4
+        with:
+          name: stat.c
+          path: |
+            device_kernel/fs/stat.c
 
       - name: Analyze compile error
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
