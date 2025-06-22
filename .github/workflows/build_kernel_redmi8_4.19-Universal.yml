@@ -680,7 +680,7 @@ jobs:
             make -j$(nproc --all) CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} 2>&1|tee error.log
           fi                   
 
-          if grep -q "Error 2" "error.log"; then
+          if grep -q "Error 1" "error.log"; then
             false            
           fi
 
@@ -703,9 +703,9 @@ jobs:
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
         uses: actions/upload-artifact@v4
         with:
-          name: readdir.c
+          name: fs.zip
           path: |
-            device_kernel/fs/readdir.c
+            device_kernel/fs
 
       - name: Analyze compile error
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}

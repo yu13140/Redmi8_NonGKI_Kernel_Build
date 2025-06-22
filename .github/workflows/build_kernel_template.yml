@@ -675,7 +675,7 @@ jobs:
             make -j$(nproc --all) CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} 2>&1|tee error.log
           fi
 
-          if grep -q "Error 2" "error.log"; then
+          if grep -q "Error 1" "error.log"; then
             false
           fi
 
