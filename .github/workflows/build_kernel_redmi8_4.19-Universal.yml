@@ -486,6 +486,8 @@ jobs:
         run: |
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
+          cp /tmp/Patches/syscall_hooks.patch ./
+          patch -p1 < syscall_hooks.patch || true
           # Nothing
 
       - name: Added mkdtboimg to kernel (Experiment)
@@ -678,6 +680,8 @@ jobs:
 
           if grep -q "Error 2" "error.log"; then
             false
+            echo "==========EOF=========="
+            cat fs/namei.c
           fi
 
           ## Generate DTBO
@@ -701,7 +705,7 @@ jobs:
         with:
           name: error.zip
           path: |
-            $GITHUB_WORKSPACE/device_kernel/fs/namei.c
+            $GITHUB_WORKSPACE/device_kernel/fs/
 
       - name: Analyze compile error
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
