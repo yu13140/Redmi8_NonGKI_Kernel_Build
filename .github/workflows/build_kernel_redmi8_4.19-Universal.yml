@@ -670,7 +670,7 @@ jobs:
                 done
                 make O=out ARCH=arm64 ${{ env.GCC_64 }} ${{ env.GCC_32 }} olddefconfig
             fi
-            make -j$(nproc --all) O=out ARCH=arm64 ${{ env.GCC_64 }} ${{ env.GCC_32 }} 2>&1|tee error.log
+            make -j32 O=out ARCH=arm64 ${{ env.GCC_64 }} ${{ env.GCC_32 }} 2>&1|tee error.log
           else
             make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} ${{ env.DEFCONFIG_NAME }}
             if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
@@ -702,7 +702,6 @@ jobs:
           fi
 
       - name: Upload Build Artifacts For Packing Error
-        if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: fs.zip
