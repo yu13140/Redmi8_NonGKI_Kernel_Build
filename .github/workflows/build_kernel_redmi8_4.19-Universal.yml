@@ -676,10 +676,7 @@ jobs:
                 make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} olddefconfig
             fi
             make -j$(nproc --all) CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} 2>&1|tee error.log
-          fi
-          
-          echo "==========EOF=========="
-          cat fs/namei.c || echo "namei.c not found!"
+          fi                   
 
           if grep -q "Error 2" "error.log"; then
             false            
@@ -704,9 +701,9 @@ jobs:
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
         uses: actions/upload-artifact@v4
         with:
-          name: error.zip
+          name: namei.c
           path: |
-            $GITHUB_WORKSPACE/device_kernel/fs/
+            device_kernel/fs/namei.c
 
       - name: Analyze compile error
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
