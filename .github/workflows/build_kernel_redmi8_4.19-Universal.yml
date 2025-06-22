@@ -485,7 +485,9 @@ jobs:
       - name: Extra Kernel Options
         run: |
           # Only ${{ env.DEVICE_NAME }} use it.
-          cd $GITHUB_WORKSPACE/device_kernel          
+          cd $GITHUB_WORKSPACE/device_kernel
+          nproc --all || true
+          echo $nproc || true
           # Nothing
 
       - name: Added mkdtboimg to kernel (Experiment)
