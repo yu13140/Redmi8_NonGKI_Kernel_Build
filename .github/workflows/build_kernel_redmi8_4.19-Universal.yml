@@ -589,6 +589,11 @@ jobs:
 
           patch -p1 < syscall_hooks.patch || true
           patch -p1 < ksu_hooks_sukisu_4.19.patch || true
+          
+          cp -f susfs4ksu/kernel_patches/stat.c fs/stat.c
+          cp -f susfs4ksu/kernel_patches/proc_namespace.c fs/proc_namespace.c
+          cp -f susfs4ksu/kernel_patches/readdir.c fs/readdir.c
+          cp -f susfs4ksu/kernel_patches/stat.h include/linux/stat.h
 
       - name: Updated SUSFS Version
         if: env.SUSFS_ENABLE == 'true' && env.SUSFS_UPDATE == 'true'
