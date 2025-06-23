@@ -18,7 +18,7 @@ env:
   KPM_PATCH_SOURCE: "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU_patch/refs/heads/main/kpm/patch_linux" # patch exec file source -> raw.githubusercontent.com/Test/Test/patch .
   GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
   GENERATE_CHIP: "xiaomi-sdm439" # only supported for qcom and mediatek.
-  BUILD_DEBUGGER: "false" # Output build errors.
+  BUILD_DEBUGGER: "true" # Output build errors.
   SKIP_PATCH: "true" # Ignore errors found in Patch Debugger.
   BUILD_OTHER_CONFIG: "false" # Merge config files.
   FREE_MORE_SPACE: "false" # if u want get more space, enabled it.
