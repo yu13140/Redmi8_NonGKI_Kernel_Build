@@ -703,9 +703,9 @@ jobs:
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
         uses: actions/upload-artifact@v4
         with:
-          name: stat.c
+          name: fs
           path: |
-            device_kernel/fs/stat.c
+            device_kernel/fs
             
       - name: Upload Build Artifacts For Packing Error 2
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
