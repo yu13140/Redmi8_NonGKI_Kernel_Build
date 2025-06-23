@@ -75,8 +75,8 @@ GitHub has dropped support for Ubuntu 20.04. If you still need it or are using C
     - **PATCHES_BRANCH** - The required branch for the patch repository (default: main).
     - **HOOK_METHOD** - Two KernelSU patching methods are available:
         - **normal**: Standard patching, works in most cases. This is only suitable for ARM64 devices with kernel version 3.18 or higher.
-        - [syscall](https://github.com/backslashxx/KernelSU/issues/5): Minimal patching method, which may improve hiding KernelSU but might cause ISO compliance issues with older Clang versions，And there are issues with support for kernels ≤4.9. It is recommended to enable this only for higher kernel versions. We now support all kernel versions, with 3.4 being the minimum supported version.
-    - **HOOK_NEWER** - This option is based on the latest backport patching solution from blackslashxx. For kernels with versions **4.9 or older**, it will automatically apply patches for kernel_write and kernel_read. However, it's possible that a second round of patching might be needed. For newer kernel versions, this isn't a concern.
+        - [syscall](https://github.com/backslashxx/KernelSU/issues/5): Minimal patching method, which may improve hiding KernelSU but might cause ISO compliance issues with older Clang versions，And there are issues with support for kernels ≤4.9. It is recommended to enable this only for higher kernel versions. We now support all kernel versions, with 3.4 being the minimum supported version. For kernels with versions **4.9 or older**, it will automatically apply patches for kernel_write and kernel_read. However, it's possible that a second round of patching might be needed. For newer kernel versions, this isn't a concern.
+    - **HOOK_OLDER** - If you need the syscall patch, but your device or KernelSU doesn't support the latest version of syscall, you can enable this.
     - **PROFILE_NAME** - Enter the name of your modified ENV environment variable file, such as codename_rom_template.env.
     - **KERNELSU_SUS_PATCH** - If your KernelSU is not part of KernelSU-Next and does not have a patch branch for SuSFS, you can enable this option (true). However, we do not recommend doing so, as the KernelSU branches have been heavily modified, and manual patching is no longer suitable for the current era.
     - **KPM_ENABLE** - (Experimental ⚠) Enables compilation support for KPM in SukiSU-Ultra. This is an experimental feature, so please enable it with caution.
@@ -154,10 +154,20 @@ Below is an introduction to the patches included in the Patches directory:
     - Used for the latest minimized manual patching (Syscall) feature implemented by backslashxx. Compatibility with older compilers isn't great. But it's been adapted to support devices with kernel versions ≤ 3.18 (ARMV7A), so it's compatible with all kernels. This will automatically execute for older kernel versions (kernel version ≤ 4.9) that lack SELinux-related permissions.
         - If there are instances where syscall wasn't updated in time, you can submit an issue or a pull request.
     - Reference: https://github.com/backslashxx/KernelSU/issues/5
+    
+- **syscall_hook_patches_older.sh**
+    - Variable: HOOK_METHOD -> syscall AND HOOK_OLDER -> true
+    - This is the original version of the syscall patch, intended for situations where you need syscall functionality but the latest version fails to execute.
+    - Reference: https://github.com/backslashxx/KernelSU/issues/5
 
 - **backport_patches.sh**
     - Executes automatically based on kernel version.
     - Used for backporting features to Non-GKI kernels. While KernelSU-Next and SukiSU-Ultra can automatically handle backporting, other branches cannot.
+    - Reference: https://github.com/backslashxx/KernelSU/issues/4#issue-2818274642
+    
+- **backport_patches_older.sh**
+    - Variable: HOOK_OLDER -> true
+    - This refers to the older backport solution, which is used for both the normal patch and the older version of the syscall patch.
     - Reference: https://github.com/backslashxx/KernelSU/issues/4#issue-2818274642
 
 - **found_gcc.sh**

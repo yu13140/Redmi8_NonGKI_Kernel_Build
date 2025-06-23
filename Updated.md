@@ -1,4 +1,24 @@
 ## 项目更新日志
+- **Ver.1.5 Fixed 25**
+    - 修正 小米Mix2s YAML cgroup v2与binder补丁执行
+
+- **Ver.1.5 Fixed 24**
+    - 移植 小米Mix2s YAML 合并config功能
+    - 修正 小米Mix2s ENV文件 Defconfig文件指向
+
+- **Ver.1.5 Fixed 23**
+    - 修正 部分YAML文件 新补丁判定
+
+- **Ver.1.5 Fixed 22**
+    - 命名交换 红米 K40 Gaming MIUI13 A12 和 红米 K40 Gaming HyperOS A13
+
+- **Ver.1.5 Fixed 21**
+    - 重命名 backport_patches_newer.sh backport_patches.sh
+    - 重命名 backport_patches.sh backport_patches_older.sh
+    - 增加 syscall_hook_patches_older.sh 补丁
+    - 修正 部分YAML文件 对于新补丁的调用
+    - 修正 说明文件 对应补丁词条说明
+
 - **Ver.1.5 Fixed 20**
     - 修正 示例YAML文件 安全生成DTBO功能获取文件错误
 
