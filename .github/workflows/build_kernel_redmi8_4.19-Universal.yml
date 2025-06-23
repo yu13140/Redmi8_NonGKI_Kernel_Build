@@ -13,7 +13,7 @@ env:
   HOOK_NEWER: "false" # syscall can try it.
   PROFILE_NAME: "olive_4.19-universal.env" # your profile name.
   KERNELSU_SUS_PATCH: "false" # if u need manual susfs patch to kernelsu.
-  KPM_ENABLE: "false" # Only use it for SukiSU-Ultra.
+  KPM_ENABLE: "true" # Only use it for SukiSU-Ultra.
   KPM_PATCH_SOURCE: "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU_patch/refs/heads/main/kpm/patch_linux" # patch exec file source -> raw.githubusercontent.com/Test/Test/patch .
   GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
   GENERATE_CHIP: "xiaomi-sdm439" # only supported for qcom and mediatek.
