@@ -162,6 +162,10 @@ jobs:
             echo "Detected Proton Clang. Not use GCC Source."
             GCC_64_BIN=aarch64-linux-gnu-
             echo "GCC_64=CROSS_COMPILE=$GCC_64_BIN" >> $GITHUB_ENV
+          elif [[ "${{ env.ZYC_CLANG }}" == 'true' ]]; then
+            echo "Detected ZyCromerZ Clang. Not use GCC Source."
+            GCC_64_BIN=aarch64-linux-gnu-
+            echo "GCC_64=CROSS_COMPILE=$GCC_64_BIN" >> $GITHUB_ENV
           elif [ -z "${{ env.GCC_64_SOURCE }}" ]; then
             echo "Not set GCC 64!"
           else
@@ -190,6 +194,10 @@ jobs:
           # Set GCC ARM32
           if [[ "${{ env.CLANG_SOURCE }}" == *proton* ]]; then
             echo "Detected Proton Clang. Not use GCC Source."
+            GCC_32_BIN=arm-linux-gnueabi-
+            echo "GCC_32=CROSS_COMPILE_ARM32=$GCC_32_BIN" >> $GITHUB_ENV
+          elif [[ "${{ env.ZYC_CLANG }}" == 'true' ]]; then
+            echo "Detected ZyCromerZ Clang. Not use GCC Source."
             GCC_32_BIN=arm-linux-gnueabi-
             echo "GCC_32=CROSS_COMPILE_ARM32=$GCC_32_BIN" >> $GITHUB_ENV
           elif [ -z "${{ env.GCC_32_SOURCE }}" ]; then
@@ -221,7 +229,12 @@ jobs:
           fi
 
           # Set Clang
-          if [[ "${{ env.CLANG_SOURCE }}" == *".git" ]]; then
+          if [[ "${{ env.ZYC_CLANG }}" == 'true' ]]; then
+            LAST_ZYC_SOURCE=$(curl -sSf https://api.github.com/repos/ZyCromerZ/Clang/releases/latest | grep browser_download_url | cut -d '"' -f 4)
+            wget -O clang.tar.gz ${{ LAST_ZYC_SOURCE }}
+            mkdir clang-custom
+            tar -C clang-custom/ -zxvf clang.tar.gz
+          elif [[ "${{ env.CLANG_SOURCE }}" == *".git" ]]; then
             git clone ${{ env.CLANG_SOURCE }} -b ${{ env.CLANG_BRANCH }} clang-custom --depth=1
           elif [[ "${{ env.CLANG_SOURCE }}" == *'.tar.gz' ]]; then
             wget -O clang.tar.gz ${{ env.CLANG_SOURCE }}
