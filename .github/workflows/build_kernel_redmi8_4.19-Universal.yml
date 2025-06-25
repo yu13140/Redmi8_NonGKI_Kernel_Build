@@ -593,6 +593,7 @@ jobs:
           cp -f susfs4ksu/kernel_patches/stat.c fs/stat.c
           cp -f susfs4ksu/kernel_patches/proc_namespace.c fs/proc_namespace.c
           cp -f susfs4ksu/kernel_patches/readdir.c fs/readdir.c
+          cp -f susfs4ksu/kernel_patches/namei.c fs/namei.c
           cp -f susfs4ksu/kernel_patches/stat.h include/linux/stat.h
 
       - name: Updated SUSFS Version
