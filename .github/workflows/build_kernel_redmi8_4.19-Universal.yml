@@ -548,10 +548,8 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
           cp susfs4ksu/kernel_patches/50_add_susfs_in_kernel-${{ env.KERNEL_VERSION }}.patch ./
-          cp susfs4ksu/kernel_patches/kernel_4.19-Bump-SuSFS-version-to-v1.5.8.patch ./
 
           patch -p1 < 50_add_susfs_in_kernel-${{ env.KERNEL_VERSION }}.patch || true
-          patch -p1 < kernel_4.19-Bump-SuSFS-version-to-v1.5.8.patch || true
 
           if [[ "${{ env.KERNELSU_NAME }}"  == "KernelSU-Next" ]]; then
             if [[ "${{ env.KERNELSU_SOURCE }}" =~ ".sh" && "${{ env.KERNELSU_BRANCH }}" =~ "susfs" ]]; then
@@ -590,11 +588,11 @@ jobs:
           patch -p1 < syscall_hooks.patch || true
           patch -p1 < ksu_hooks_sukisu_4.19.patch || true
           
-          cp -f susfs4ksu/kernel_patches/stat.c fs/stat.c
-          cp -f susfs4ksu/kernel_patches/proc_namespace.c fs/proc_namespace.c
-          cp -f susfs4ksu/kernel_patches/readdir.c fs/readdir.c
-          cp -f susfs4ksu/kernel_patches/namei.c fs/namei.c
-          cp -f susfs4ksu/kernel_patches/stat.h include/linux/stat.h
+          cp -f susfs4ksu/kernel_patches/sdm439/stat.c fs/stat.c
+          cp -f susfs4ksu/kernel_patches/sdm439/proc_namespace.c fs/proc_namespace.c
+          cp -f susfs4ksu/kernel_patches/sdm439/readdir.c fs/readdir.c
+          cp -f susfs4ksu/kernel_patches/sdm439/namei.c fs/namei.c
+          cp -f susfs4ksu/kernel_patches/sdm439/stat.h include/linux/stat.h
 
       - name: Updated SUSFS Version
         if: env.SUSFS_ENABLE == 'true' && env.SUSFS_UPDATE == 'true'
