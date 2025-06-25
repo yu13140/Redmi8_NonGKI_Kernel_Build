@@ -231,7 +231,7 @@ jobs:
           # Set Clang
           if [[ "${{ env.ZYC_CLANG }}" == 'true' ]]; then
             LAST_ZYC_SOURCE=$(curl -sSf https://api.github.com/repos/ZyCromerZ/Clang/releases/latest | grep browser_download_url | cut -d '"' -f 4)
-            wget -O clang.tar.gz ${{ LAST_ZYC_SOURCE }}
+            wget -O clang.tar.gz ${{ env.LAST_ZYC_SOURCE }}
             mkdir clang-custom
             tar -C clang-custom/ -zxvf clang.tar.gz
           elif [[ "${{ env.CLANG_SOURCE }}" == *".git" ]]; then
