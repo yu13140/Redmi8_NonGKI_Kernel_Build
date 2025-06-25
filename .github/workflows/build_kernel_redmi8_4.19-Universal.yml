@@ -67,6 +67,7 @@ jobs:
               EXTRA_CMDS
               KERNEL_SOURCE
               KERNEL_BRANCH
+              BINUTILS_CLANG
               CLANG_SOURCE
               CLANG_BRANCH
               GCC_GNU
@@ -229,7 +230,7 @@ jobs:
           fi
 
           # Set Clang
-          elif [[ "${{ env.CLANG_SOURCE }}" == *".git" ]]; then
+          if [[ "${{ env.CLANG_SOURCE }}" == *".git" ]]; then
             git clone ${{ env.CLANG_SOURCE }} -b ${{ env.CLANG_BRANCH }} clang-custom --depth=1
           elif [[ "${{ env.CLANG_SOURCE }}" == *'.tar.gz' ]]; then
             wget -O clang.tar.gz ${{ env.CLANG_SOURCE }}
@@ -243,9 +244,9 @@ jobs:
             wget -O clang.zip ${{ env.CLANG_SOURCE }}
             mkdir clang-custom
             unzip clang.zip -d clang-custom/
-          elif [[ "${{ env.CUSTOM_CLANG_SOURCE }}" == *'.7z' ]]; then
+          elif [[ "${{ env.CLANG_SOURCE }}" == *'.7z' ]]; then
             wget -O clang.7z ${{ env.CUSTOM_CLANG_SOURCE }}
-            7z x clang.7z -o"clang-custom"          
+            7z x clang.7z -o"clang-custom"
           elif [[ "${{ env.CLANG_SOURCE }}" == *"antman" ]]; then
             mkdir clang-custom
             cd clang-custom
