@@ -706,7 +706,7 @@ jobs:
           fi
 
       - name: Upload Build Artifacts For Packing Error
-        if: env.BUILD_DEBUGGER == 'true'      
+        if: ${{ always() && env.BUILD_DEBUGGER == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: fs
@@ -714,7 +714,7 @@ jobs:
             device_kernel/fs
             
       - name: Upload Build Artifacts For Packing Error 2
-        if: env.BUILD_DEBUGGER == 'true'      
+        if: ${{ always() && env.BUILD_DEBUGGER == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: include
