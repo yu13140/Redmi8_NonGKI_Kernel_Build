@@ -162,8 +162,8 @@ jobs:
             echo "Detected Proton Clang. Not use GCC Source."
             GCC_64_BIN=aarch64-linux-gnu-
             echo "GCC_64=CROSS_COMPILE=$GCC_64_BIN" >> $GITHUB_ENV
-          elif [[ "${{ env.ZYC_CLANG }}" == 'true' ]]; then
-            echo "Detected ZyCromerZ Clang. Not use GCC Source."
+          elif [[ "${{ env.BINUTILS_CLANG }}" == 'true' ]]; then
+            echo "Clang with binutils detected. Not use GCC Source."
             GCC_64_BIN=aarch64-linux-gnu-
             echo "GCC_64=CROSS_COMPILE=$GCC_64_BIN" >> $GITHUB_ENV
           elif [ -z "${{ env.GCC_64_SOURCE }}" ]; then
@@ -196,8 +196,8 @@ jobs:
             echo "Detected Proton Clang. Not use GCC Source."
             GCC_32_BIN=arm-linux-gnueabi-
             echo "GCC_32=CROSS_COMPILE_ARM32=$GCC_32_BIN" >> $GITHUB_ENV
-          elif [[ "${{ env.ZYC_CLANG }}" == 'true' ]]; then
-            echo "Detected ZyCromerZ Clang. Not use GCC Source."
+          elif [[ "${{ env.BINUTILS_CLANG }}" == 'true' ]]; then
+            echo "Clang with binutils detected. Not use GCC Source."
             GCC_32_BIN=arm-linux-gnueabi-
             echo "GCC_32=CROSS_COMPILE_ARM32=$GCC_32_BIN" >> $GITHUB_ENV
           elif [ -z "${{ env.GCC_32_SOURCE }}" ]; then
@@ -229,11 +229,6 @@ jobs:
           fi
 
           # Set Clang
-          if [[ "${{ env.ZYC_CLANG }}" == 'true' ]]; then
-            LAST_ZYC_SOURCE=$(curl -sSf https://api.github.com/repos/ZyCromerZ/Clang/releases/latest | grep browser_download_url | cut -d '"' -f 4)
-            wget -O clang.tar.gz ${{ env.LAST_ZYC_SOURCE }}
-            mkdir clang-custom
-            tar -C clang-custom/ -zxvf clang.tar.gz
           elif [[ "${{ env.CLANG_SOURCE }}" == *".git" ]]; then
             git clone ${{ env.CLANG_SOURCE }} -b ${{ env.CLANG_BRANCH }} clang-custom --depth=1
           elif [[ "${{ env.CLANG_SOURCE }}" == *'.tar.gz' ]]; then
@@ -248,6 +243,9 @@ jobs:
             wget -O clang.zip ${{ env.CLANG_SOURCE }}
             mkdir clang-custom
             unzip clang.zip -d clang-custom/
+          elif [[ "${{ env.CUSTOM_CLANG_SOURCE }}" == *'.7z' ]]; then
+            wget -O clang.7z ${{ env.CUSTOM_CLANG_SOURCE }}
+            7z x clang.7z -o"clang-custom"          
           elif [[ "${{ env.CLANG_SOURCE }}" == *"antman" ]]; then
             mkdir clang-custom
             cd clang-custom
