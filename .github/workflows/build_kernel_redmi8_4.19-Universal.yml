@@ -164,9 +164,8 @@ jobs:
             GCC_64_BIN=aarch64-linux-gnu-
             echo "GCC_64=CROSS_COMPILE=$GCC_64_BIN" >> $GITHUB_ENV
           elif [[ "${{ env.ZYC_CLANG }}" == 'true' ]]; then
-            echo "Clang with binutils detected. Not use GCC Source."
-            GCC_64_BIN=aarch64-linux-gnu-
-            echo "GCC_64=CROSS_COMPILE=$GCC_64_BIN" >> $GITHUB_ENV
+            echo "Clang with binutils detected. Not use GCC Source."           
+            echo "GCC_64=CROSS_COMPILE=$GITHUB_WORKSPACE/device_kernel/clang-custom/aarch64-linux-gnu-" >> $GITHUB_ENV
           elif [ -z "${{ env.GCC_64_SOURCE }}" ]; then
             echo "Not set GCC 64!"
           else
@@ -199,8 +198,7 @@ jobs:
             echo "GCC_32=CROSS_COMPILE_ARM32=$GCC_32_BIN" >> $GITHUB_ENV
           elif [[ "${{ env.ZYC_CLANG }}" == 'true' ]]; then
             echo "Clang with binutils detected. Not use GCC Source."
-            GCC_32_BIN=arm-linux-gnueabi-
-            echo "GCC_32=CROSS_COMPILE_ARM32=$GCC_32_BIN" >> $GITHUB_ENV
+            echo "GCC_32=CROSS_COMPILE=$GITHUB_WORKSPACE/device_kernel/clang-custom/arm-linux-androideabi-" >> $GITHUB_ENV
           elif [ -z "${{ env.GCC_32_SOURCE }}" ]; then
             echo "Not set GCC 32!"
           else
@@ -503,7 +501,6 @@ jobs:
         run: |
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
-          ls -a ../clang-custom
           # Nothing
 
       - name: Added mkdtboimg to kernel (Experiment)
