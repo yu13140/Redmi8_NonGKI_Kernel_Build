@@ -501,6 +501,8 @@ jobs:
         run: |
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
+          cd ../clang-custom
+          ls -aR
           # Nothing
 
       - name: Added mkdtboimg to kernel (Experiment)
