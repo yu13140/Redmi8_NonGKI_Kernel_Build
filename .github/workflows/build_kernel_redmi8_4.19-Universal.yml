@@ -165,7 +165,7 @@ jobs:
             echo "GCC_64=CROSS_COMPILE=$GCC_64_BIN" >> $GITHUB_ENV
           elif [[ "${{ env.ZYC_CLANG }}" == 'true' ]]; then
             echo "Clang with binutils detected. Not use GCC Source."           
-            echo "GCC_64=CROSS_COMPILE=$GITHUB_WORKSPACE/device_kernel/clang-custom/aarch64-linux-gnu-" >> $GITHUB_ENV
+            echo "GCC_64=CROSS_COMPILE=$GITHUB_WORKSPACE/clang-custom/aarch64-linux-gnu-" >> $GITHUB_ENV
           elif [ -z "${{ env.GCC_64_SOURCE }}" ]; then
             echo "Not set GCC 64!"
           else
@@ -198,7 +198,7 @@ jobs:
             echo "GCC_32=CROSS_COMPILE_ARM32=$GCC_32_BIN" >> $GITHUB_ENV
           elif [[ "${{ env.ZYC_CLANG }}" == 'true' ]]; then
             echo "Clang with binutils detected. Not use GCC Source."
-            echo "GCC_32=CROSS_COMPILE=$GITHUB_WORKSPACE/device_kernel/clang-custom/arm-linux-androideabi-" >> $GITHUB_ENV
+            echo "GCC_32=CROSS_COMPILE=$GITHUB_WORKSPACE/clang-custom/arm-linux-androideabi-" >> $GITHUB_ENV
           elif [ -z "${{ env.GCC_32_SOURCE }}" ]; then
             echo "Not set GCC 32!"
           else
@@ -501,8 +501,6 @@ jobs:
         run: |
           # Only ${{ env.DEVICE_NAME }} use it.
           cd $GITHUB_WORKSPACE/device_kernel
-          cd ../clang-custom
-          ls -aR
           # Nothing
 
       - name: Added mkdtboimg to kernel (Experiment)
@@ -656,25 +654,14 @@ jobs:
           export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
           cd $GITHUB_WORKSPACE/device_kernel/
           if [ -z "${{ env.GCC_32 }}" ] && [ -z "${{ env.GCC_64 }}" ]; then
-            if [[ "${{ env.ZYC_CLANG }}" == 'true' ]]; then
-              make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} ${{ env.DEFCONFIG_NAME }}
-              if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
-                  for FILES in "${MERGE_CONFIG_FILES[@]}"; do
-                      ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/arm64/configs/$FILES
-                  done
-                  make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} olddefconfig
-              fi
-              make -j$(nproc --all) CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} 2>&1|tee error.log
-            else
-              make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.DEFCONFIG_NAME }}
-              if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
-                  for FILES in "${MERGE_CONFIG_FILES[@]}"; do
-                      ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/arm64/configs/$FILES
-                  done
-                  make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} olddefconfig
-              fi
-              make -j$(nproc --all) CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} 2>&1|tee error.log
+            make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.DEFCONFIG_NAME }}
+            if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
+                for FILES in "${MERGE_CONFIG_FILES[@]}"; do
+                    ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/arm64/configs/$FILES
+                done
+                make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} olddefconfig
             fi
+            make -j$(nproc --all) CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} 2>&1|tee error.log
           elif [ -z "${{ env.GCC_32 }}" ]; then
             make O=out ARCH=arm64 ${{ env.GCC_64 }} ${{ env.DEFCONFIG_NAME }}
             if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
