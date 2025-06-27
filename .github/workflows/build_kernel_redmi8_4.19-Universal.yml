@@ -579,11 +579,7 @@ jobs:
           patch -p1 < ksu_hooks_sukisu_4.19.patch || true
           
           cp -f susfs4ksu/kernel_patches/sdm439/stat.c fs/stat.c
-          cp -f susfs4ksu/kernel_patches/sdm439/namespace.c fs/namespace.c
           cp -f susfs4ksu/kernel_patches/sdm439/proc_namespace.c fs/proc_namespace.c
-          cp -f susfs4ksu/kernel_patches/sdm439/readdir.c fs/readdir.c
-          cp -f susfs4ksu/kernel_patches/sdm439/namei.c fs/namei.c
-          cp -f susfs4ksu/kernel_patches/sdm439/stat.h include/linux/stat.h
 
       - name: Updated SUSFS Version
         if: env.SUSFS_ENABLE == 'true' && env.SUSFS_UPDATE == 'true'
