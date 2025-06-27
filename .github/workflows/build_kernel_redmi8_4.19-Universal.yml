@@ -103,7 +103,7 @@ jobs:
                 apt install python2 python3 -y
             elif [ "${{ env.PYTHON_VERSION }}" == "2" ]; then
                 apt install python2 -y
-                rm /usr/bin/python
+                rm -rf /usr/bin/python
                 ln -s /usr/bin/python2.7 /usr/bin/python
             else
                 echo "You need choose a python version."
