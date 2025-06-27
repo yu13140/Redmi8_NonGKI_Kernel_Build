@@ -298,7 +298,7 @@ jobs:
         shell: bash
         run: |
           # Variable
-          SUSFS_SOURCE=https://github.com/yu13140/susfs4ksu.git
+          SUSFS_SOURCE=https://github.com/ShirkNeko/susfs4ksu.git
           SUSFS_BRANCH=kernel-${{ env.KERNEL_VERSION }}
 
           # Set ${{ env.PACK_METHOD }} and KernelSU
