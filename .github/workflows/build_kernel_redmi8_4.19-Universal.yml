@@ -82,6 +82,7 @@ jobs:
 
           # Move patch folder to tmp
           mv $GITHUB_WORKSPACE/Patches /tmp/
+          mv $GITHUB_WORKSPACE/bin /tmp/
 
       - name: Install necessary packages
         shell: bash
