@@ -115,6 +115,8 @@ jobs:
             apt-get install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python3 -y
             apt-get install zstd libc6 binutils libc6-dev-i386 gcc g++ p7zip p7zip-full wget curl -y
           fi
+          
+          . /tmp/Patches/curlx.sh
 
       - name: Install GNU GCC
         shell: bash
@@ -148,17 +150,17 @@ jobs:
               git clone ${{ env.GCC_64_SOURCE }} -b ${{ env.GCC_64_BRANCH }} gcc-64 --depth=1
             fi
             if [[ "${{ env.GCC_64_SOURCE }}" == *'.tar.gz' ]]; then
-              wget -O gcc-64.tar.gz ${{ env.GCC_64_SOURCE }}
+              curlx gcc-64.tar.gz ${{ env.GCC_64_SOURCE }}
               mkdir gcc-64
               tar -C gcc-64/ -zxvf gcc-64.tar.gz
             fi
             if [[ "${{ env.GCC_64_SOURCE }}" == *'.tar.xz' ]]; then
-              wget -O gcc-64.tar.xz ${{ env.GCC_64_SOURCE }}
+              curlx gcc-64.tar.xz ${{ env.GCC_64_SOURCE }}
               mkdir gcc-64
               tar -C gcc-64/ -xvf gcc-64.tar.xz --strip-components 1
             fi
             if [[ "${{ env.GCC_64_SOURCE }}" == *'.zip' ]]; then
-              wget -O gcc-64.zip ${{ env.GCC_64_SOURCE }}
+              curlx gcc-64.zip ${{ env.GCC_64_SOURCE }}
               mkdir gcc-64
               unzip gcc-64.zip -d gcc-64/
             fi
@@ -178,17 +180,17 @@ jobs:
               git clone ${{ env.GCC_32_SOURCE }} -b ${{ env.GCC_32_BRANCH }} gcc-32 --depth=1
             fi
             if [[ "${{ env.GCC_32_SOURCE }}" == *'.tar.gz' ]]; then
-              wget -O gcc-32.tar.gz ${{ env.GCC_32_SOURCE }}
+              curlx gcc-32.tar.gz ${{ env.GCC_32_SOURCE }}
               mkdir gcc-32
               tar -C gcc-32/ -zxvf gcc-32.tar.gz
             fi
             if [[ "${{ env.GCC_32_SOURCE }}" == *'.tar.xz' ]]; then
-              wget -O gcc-32.tar.xz ${{ env.GCC_32_SOURCE }}
+              curlx gcc-32.tar.xz ${{ env.GCC_32_SOURCE }}
               mkdir gcc-32
               tar -C gcc-32/ -xvf gcc-32.tar.xz --strip-components 1
             fi
             if [[ "${{ env.GCC_32_SOURCE }}" == *'.zip' ]]; then
-              wget -O gcc-32.zip ${{ env.GCC_32_SOURCE }}
+              curlx gcc-32.zip ${{ env.GCC_32_SOURCE }}
               mkdir gcc-32
               unzip gcc-32.zip -d gcc-32/
             fi
@@ -203,21 +205,21 @@ jobs:
           if [[ "${{ env.CLANG_SOURCE }}" == *".git" ]]; then
             git clone ${{ env.CLANG_SOURCE }} -b ${{ env.CLANG_BRANCH }} clang-custom --depth=1
           elif [[ "${{ env.CLANG_SOURCE }}" == *'.tar.gz' ]]; then
-            wget -O clang.tar.gz ${{ env.CLANG_SOURCE }}
+            curlx clang.tar.gz ${{ env.CLANG_SOURCE }}
             mkdir clang-custom
             tar -C clang-custom/ -zxvf clang.tar.gz
           elif [[ "${{ env.CLANG_SOURCE }}" == *'.tar.xz' ]]; then
-            wget -O clang.tar.xz ${{ env.CLANG_SOURCE }}
+            curlx clang.tar.xz ${{ env.CLANG_SOURCE }}
             mkdir clang-custom
             tar -C clang-custom/ -xvf clang.tar.xz --strip-components 1
           elif [[ "${{ env.CLANG_SOURCE }}" == *'.zip' ]]; then
-            wget -O clang.zip ${{ env.CLANG_SOURCE }}
+            curlx clang.zip ${{ env.CLANG_SOURCE }}
             mkdir clang-custom
             unzip clang.zip -d clang-custom/
           elif [[ "${{ env.CLANG_SOURCE }}" == *"antman" ]]; then
             mkdir clang-custom
             cd clang-custom
-            wget ${{ env.CLANG_SOURCE }} -O antman
+            curlx antman ${{ env.CLANG_SOURCE }}
             chmod +x antman
             bash antman -S
           else
@@ -231,12 +233,12 @@ jobs:
           git clone --recursive ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_BRANCH }} device_kernel --depth=1
           if [[ -n "${{ env.DEFCONFIG_SOURCE }}" ]]; then
             if [[ -d "device_kernel/arch/arm64/configs" ]]; then
-                wget ${{ env.DEFCONFIG_SOURCE }} -O device_kernel/arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
+                curlx device_kernel/arch/arm64/configs/${{ env.DEFCONFIG_NAME }} ${{ env.DEFCONFIG_SOURCE }}
             else
-                wget ${{ env.DEFCONFIG_SOURCE }} -O device_kernel/arch/arm/configs/${{ env.DEFCONFIG_NAME }}
+                curlx device_kernel/arch/arm/configs/${{ env.DEFCONFIG_NAME }} ${{ env.DEFCONFIG_SOURCE }}
             fi
           elif [[ -n "${{ env.DEFCONFIG_ORIGIN_DEFCONFIG }}" ]]; then
-            wget ${{ env.DEFCONFIG_ORIGIN_DEFCONFIG }} -O $GITHUB_WORKSPACE/device_kernel/Image
+            curlx $GITHUB_WORKSPACE/device_kernel/Image ${{ env.DEFCONFIG_ORIGIN_DEFCONFIG }}
             if [[ -d "device_kernel/arch/arm64/configs" ]]; then
                 $GITHUB_WORKSPACE/device_kernel/scripts/extract-ikconfig $GITHUB_WORKSPACE/device_kernel/Image > $GITHUB_WORKSPACE/device_kernel/arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
             else
@@ -312,7 +314,7 @@ jobs:
           elif [[ ${{ env.PACK_METHOD }} == "MKBOOTIMG" ]]; then
             cd $GITHUB_WORKSPACE
             git clone https://android.googlesource.com/platform/system/tools/mkbootimg $GITHUB_WORKSPACE/mkboottools -b main-kernel-build-2024 --depth=1
-            wget ${{ env.BOOT_SOURCE }} -O $GITHUB_WORKSPACE/boot_source_${{ env.DEVICE_NAME }}.img
+            curlx $GITHUB_WORKSPACE/boot_source_${{ env.DEVICE_NAME }}.img ${{ env.BOOT_SOURCE }}
             cd device_kernel
           else
             false
@@ -359,7 +361,7 @@ jobs:
           if [[ -d "${{ env.KERNELSU_NAME }}/kernel/kpm" ]]; then
             if [ -f "include/linux/set_memory.h" ] && [ "${{ env.KPM_ENABLE }}" == "true" ]; then
                 echo "CONFIG_KPM=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-                wget "${{ env.KPM_PATCH_SOURCE }}" -O patch
+                curlx patch "${{ env.KPM_PATCH_SOURCE }}"
                 chmod a+x patch
                 echo "Set KPM successfully !"
             elif [ "${{ env.KPM_ENABLE }}" == "true" ]; then
@@ -579,7 +581,6 @@ jobs:
           patch -p1 < ksu_hooks_sukisu_4.19.patch || true
           
           cp -f susfs4ksu/kernel_patches/sdm439/stat.c fs/stat.c
-          cp -f susfs4ksu/kernel_patches/sdm439/open.c fs/open.c
           cp -f susfs4ksu/kernel_patches/sdm439/proc_namespace.c fs/proc_namespace.c
 
       - name: Updated SUSFS Version
@@ -709,22 +710,6 @@ jobs:
           name: include
           path: |
             device_kernel/include
-
-      - name: Upload Build Artifacts For Packing Error 3
-        if: ${{ always() && env.BUILD_DEBUGGER == 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: pty
-          path: |
-            device_kernel/drivers/tty/pty.c
-
-      - name: Upload Build Artifacts For Packing Error 4
-        if: ${{ always() && env.BUILD_DEBUGGER == 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: input
-          path: |
-            device_kernel/drivers/input/input.c
 
       - name: Analyze compile error
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
