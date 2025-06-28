@@ -710,7 +710,7 @@ jobs:
           path: |
             device_kernel/include
 
-       - name: Upload Build Artifacts For Packing Error 2
+      - name: Upload Build Artifacts For Packing Error 3
         if: ${{ always() && env.BUILD_DEBUGGER == 'true' }}
         uses: actions/upload-artifact@v4
         with:
