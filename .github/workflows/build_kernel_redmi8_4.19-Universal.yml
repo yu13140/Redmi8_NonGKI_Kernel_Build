@@ -116,7 +116,7 @@ jobs:
             apt-get install zstd libc6 binutils libc6-dev-i386 gcc g++ p7zip p7zip-full wget curl -y
           fi
           
-          alias curlx='curl -C - --progress-bar -L $2 -o $1'
+          echo "alias curlx='curl -C - --progress-bar -L $2 -o $1'" >> /etc/bashrc
 
       - name: Install GNU GCC
         shell: bash
