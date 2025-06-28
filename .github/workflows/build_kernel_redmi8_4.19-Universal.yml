@@ -116,7 +116,7 @@ jobs:
             apt-get install zstd libc6 binutils libc6-dev-i386 gcc g++ p7zip p7zip-full wget curl -y
           fi
           
-          . /tmp/Patches/curlx.sh
+          alias curlx='curl -C - --progress-bar -L $2 -o $1'
 
       - name: Install GNU GCC
         shell: bash
@@ -150,17 +150,17 @@ jobs:
               git clone ${{ env.GCC_64_SOURCE }} -b ${{ env.GCC_64_BRANCH }} gcc-64 --depth=1
             fi
             if [[ "${{ env.GCC_64_SOURCE }}" == *'.tar.gz' ]]; then
-              curlx gcc-64.tar.gz ${{ env.GCC_64_SOURCE }}
+              curlx ${{ env.GCC_64_SOURCE }} gcc-64.tar.gz
               mkdir gcc-64
               tar -C gcc-64/ -zxvf gcc-64.tar.gz
             fi
             if [[ "${{ env.GCC_64_SOURCE }}" == *'.tar.xz' ]]; then
-              curlx gcc-64.tar.xz ${{ env.GCC_64_SOURCE }}
+              curlx ${{ env.GCC_64_SOURCE }} gcc-64.tar.xz
               mkdir gcc-64
               tar -C gcc-64/ -xvf gcc-64.tar.xz --strip-components 1
             fi
             if [[ "${{ env.GCC_64_SOURCE }}" == *'.zip' ]]; then
-              curlx gcc-64.zip ${{ env.GCC_64_SOURCE }}
+              curlx ${{ env.GCC_64_SOURCE }} gcc-64.zip
               mkdir gcc-64
               unzip gcc-64.zip -d gcc-64/
             fi
@@ -180,17 +180,17 @@ jobs:
               git clone ${{ env.GCC_32_SOURCE }} -b ${{ env.GCC_32_BRANCH }} gcc-32 --depth=1
             fi
             if [[ "${{ env.GCC_32_SOURCE }}" == *'.tar.gz' ]]; then
-              curlx gcc-32.tar.gz ${{ env.GCC_32_SOURCE }}
+              curlx ${{ env.GCC_32_SOURCE }} gcc-32.tar.gz
               mkdir gcc-32
               tar -C gcc-32/ -zxvf gcc-32.tar.gz
             fi
             if [[ "${{ env.GCC_32_SOURCE }}" == *'.tar.xz' ]]; then
-              curlx gcc-32.tar.xz ${{ env.GCC_32_SOURCE }}
+              curlx ${{ env.GCC_32_SOURCE }} gcc-32.tar.xz
               mkdir gcc-32
               tar -C gcc-32/ -xvf gcc-32.tar.xz --strip-components 1
             fi
             if [[ "${{ env.GCC_32_SOURCE }}" == *'.zip' ]]; then
-              curlx gcc-32.zip ${{ env.GCC_32_SOURCE }}
+              curlx ${{ env.GCC_32_SOURCE }} gcc-32.zip
               mkdir gcc-32
               unzip gcc-32.zip -d gcc-32/
             fi
@@ -205,21 +205,21 @@ jobs:
           if [[ "${{ env.CLANG_SOURCE }}" == *".git" ]]; then
             git clone ${{ env.CLANG_SOURCE }} -b ${{ env.CLANG_BRANCH }} clang-custom --depth=1
           elif [[ "${{ env.CLANG_SOURCE }}" == *'.tar.gz' ]]; then
-            curlx clang.tar.gz ${{ env.CLANG_SOURCE }}
+            curlx ${{ env.CLANG_SOURCE }} clang.tar.gz
             mkdir clang-custom
             tar -C clang-custom/ -zxvf clang.tar.gz
           elif [[ "${{ env.CLANG_SOURCE }}" == *'.tar.xz' ]]; then
-            curlx clang.tar.xz ${{ env.CLANG_SOURCE }}
+            curlx ${{ env.CLANG_SOURCE }} clang.tar.xz
             mkdir clang-custom
             tar -C clang-custom/ -xvf clang.tar.xz --strip-components 1
           elif [[ "${{ env.CLANG_SOURCE }}" == *'.zip' ]]; then
-            curlx clang.zip ${{ env.CLANG_SOURCE }}
+            curlx ${{ env.CLANG_SOURCE }} clang.zip
             mkdir clang-custom
             unzip clang.zip -d clang-custom/
           elif [[ "${{ env.CLANG_SOURCE }}" == *"antman" ]]; then
             mkdir clang-custom
             cd clang-custom
-            curlx antman ${{ env.CLANG_SOURCE }}
+            curlx ${{ env.CLANG_SOURCE }} antman
             chmod +x antman
             bash antman -S
           else
@@ -233,12 +233,12 @@ jobs:
           git clone --recursive ${{ env.KERNEL_SOURCE }} -b ${{ env.KERNEL_BRANCH }} device_kernel --depth=1
           if [[ -n "${{ env.DEFCONFIG_SOURCE }}" ]]; then
             if [[ -d "device_kernel/arch/arm64/configs" ]]; then
-                curlx device_kernel/arch/arm64/configs/${{ env.DEFCONFIG_NAME }} ${{ env.DEFCONFIG_SOURCE }}
+                curlx ${{ env.DEFCONFIG_SOURCE }} device_kernel/arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
             else
-                curlx device_kernel/arch/arm/configs/${{ env.DEFCONFIG_NAME }} ${{ env.DEFCONFIG_SOURCE }}
+                curlx ${{ env.DEFCONFIG_SOURCE }} device_kernel/arch/arm/configs/${{ env.DEFCONFIG_NAME }}
             fi
           elif [[ -n "${{ env.DEFCONFIG_ORIGIN_DEFCONFIG }}" ]]; then
-            curlx $GITHUB_WORKSPACE/device_kernel/Image ${{ env.DEFCONFIG_ORIGIN_DEFCONFIG }}
+            curlx ${{ env.DEFCONFIG_ORIGIN_DEFCONFIG }} $GITHUB_WORKSPACE/device_kernel/Image
             if [[ -d "device_kernel/arch/arm64/configs" ]]; then
                 $GITHUB_WORKSPACE/device_kernel/scripts/extract-ikconfig $GITHUB_WORKSPACE/device_kernel/Image > $GITHUB_WORKSPACE/device_kernel/arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
             else
@@ -314,7 +314,7 @@ jobs:
           elif [[ ${{ env.PACK_METHOD }} == "MKBOOTIMG" ]]; then
             cd $GITHUB_WORKSPACE
             git clone https://android.googlesource.com/platform/system/tools/mkbootimg $GITHUB_WORKSPACE/mkboottools -b main-kernel-build-2024 --depth=1
-            curlx $GITHUB_WORKSPACE/boot_source_${{ env.DEVICE_NAME }}.img ${{ env.BOOT_SOURCE }}
+            curlx ${{ env.BOOT_SOURCE }} $GITHUB_WORKSPACE/boot_source_${{ env.DEVICE_NAME }}.img
             cd device_kernel
           else
             false
@@ -361,7 +361,7 @@ jobs:
           if [[ -d "${{ env.KERNELSU_NAME }}/kernel/kpm" ]]; then
             if [ -f "include/linux/set_memory.h" ] && [ "${{ env.KPM_ENABLE }}" == "true" ]; then
                 echo "CONFIG_KPM=y" >> ./arch/arm64/configs/${{ env.DEFCONFIG_NAME }}
-                curlx patch "${{ env.KPM_PATCH_SOURCE }}"
+                curlx "${{ env.KPM_PATCH_SOURCE }}" patch
                 chmod a+x patch
                 echo "Set KPM successfully !"
             elif [ "${{ env.KPM_ENABLE }}" == "true" ]; then
@@ -482,7 +482,7 @@ jobs:
         run: |
           # Get MKDTBO tool to kernel
           cd $GITHUB_WORKSPACE/device_kernel/scripts/dtc
-          wget https://android.googlesource.com/platform/system/libufdt/+archive/refs/heads/main/utils/src.tar.gz
+          curlx https://android.googlesource.com/platform/system/libufdt/+archive/refs/heads/main/utils/src.tar.gz src.tar.gz
           tar zxvf src.tar.gz
           rm -f src.tar.gz
 
@@ -681,7 +681,7 @@ jobs:
             cd $GITHUB_WORKSPACE/device_kernel
             mkdir dtbo_tool
             cd dtbo_tool
-            wget https://android.googlesource.com/platform/system/libufdt/+archive/master/utils.tar.gz -O mkdtboimg.tar.gz
+            curlx https://android.googlesource.com/platform/system/libufdt/+archive/master/utils.tar.gz mkdtboimg.tar.gz
             tar zxvf mkdtboimg.tar.gz
             cd ../
             if [ -d "$GITHUB_WORKSPACE/device_kernel/out/arch/arm64/boot/dts/vendor" ]; then
