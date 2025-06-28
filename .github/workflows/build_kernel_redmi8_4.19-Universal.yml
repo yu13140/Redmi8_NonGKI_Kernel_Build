@@ -701,7 +701,7 @@ jobs:
           name: fs
           path: |
             device_kernel/fs
-            
+
       - name: Upload Build Artifacts For Packing Error 2
         if: ${{ always() && env.BUILD_DEBUGGER == 'true' }}
         uses: actions/upload-artifact@v4
@@ -709,6 +709,14 @@ jobs:
           name: include
           path: |
             device_kernel/include
+
+       - name: Upload Build Artifacts For Packing Error 2
+        if: ${{ always() && env.BUILD_DEBUGGER == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: drivers
+          path: |
+            device_kernel/drivers
 
       - name: Analyze compile error
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
