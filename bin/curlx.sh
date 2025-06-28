@@ -1,1 +1,1 @@
-curl -C - --progress-bar -L $2 -o $1
+curl -C - --progress-bar -L $1 -o $2
