@@ -5,6 +5,7 @@ on:
 env:
   HOOK_METHOD: "normal" # manual hook method,can choice syscall and normal.
   HOOK_OLDER: "false" # contain backport older patch and syscall older patch.
+  BUILD_OTHER_CONFIG: "true" # Merge config files.
 
 jobs:
   build:
@@ -288,9 +289,9 @@ jobs:
                   bash normal_patches.sh
                   echo "execuated patch successfully."
                   if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
-                        cp /tmp/Patches/backport_patches_older.sh ./
-                        bash backport_patches_older.sh
-                        echo "execuated backport patch older successfully. "
+                        cp /tmp/Patches/backport_patches_early.sh ./
+                        bash backport_patches_early.sh
+                        echo "execuated backport patch early successfully. "
                   else
                       echo "your kernel needn't backport patch."
                   fi
@@ -303,11 +304,16 @@ jobs:
                    cp /tmp/Patches/syscall_hook_patches_older.sh device_kernel/
                    cd device_kernel
                    bash syscall_hook_patches_older.sh
-                   echo "execuated syscall patch successfully."
+                   echo "execuated syscall patch older successfully."
                    if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
-                     cp /tmp/Patches/backport_patches_older.sh ./
-                     bash backport_patches_older.sh
-                     echo "execuated backport patch older successfully. "
+                     cp /tmp/Patches/backport_patches.sh ./
+                     bash backport_patches.sh
+                     if [ "${{ env.FIRST_VERSION }}" -lt 5 ] && [ "${{ env.SECOND_VERSION }}" -lt 10 ]; then
+                         cp /tmp/Patches/Patch/backport_kernel_read_and_kernel_write_to_ksu.patch ./
+                         patch -p1 < backport_kernel_read_and_kernel_write_to_ksu.patch || true
+                         echo "execuated backport patch kernel_read and kernel_read successfully. If you current kernel version < 4.14, then u maybe manual fixed it."
+                     fi
+                     echo "execuated backport patch successfully. "
                    else
                      echo "your kernel needn't backport patch."
                    fi
@@ -438,14 +444,54 @@ jobs:
 
       - name: Build Kernel
         run: |
+          MERGE_CONFIG_FILES=("vendor/xiaomi/magictime-common.config")
           export PATH=$GITHUB_WORKSPACE/clang-custom/bin:$PATH
           cd $GITHUB_WORKSPACE/device_kernel/
           if [ -z "${{ env.GCC_32 }}" ] && [ -z "${{ env.GCC_64 }}" ]; then
             make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.DEFCONFIG_NAME }}
-            make -j$(nproc --all) CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }}
+            if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
+                for FILES in "${MERGE_CONFIG_FILES[@]}"; do
+                    ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/arm64/configs/$FILES
+                done
+                make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} olddefconfig
+            fi
+            make -j$(nproc --all) CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} 2>&1|tee error.log
+          elif [ -z "${{ env.GCC_32 }}" ]; then
+            make O=out ARCH=arm64 ${{ env.GCC_64 }} ${{ env.DEFCONFIG_NAME }}
+            if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
+                for FILES in "${MERGE_CONFIG_FILES[@]}"; do
+                    ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/arm64/configs/$FILES
+                done
+                make O=out ARCH=arm64 ${{ env.GCC_64 }} olddefconfig
+            fi
+            make -j$(nproc --all) O=out ARCH=arm64 ${{ env.GCC_64 }} 2>&1|tee error.log
+          elif [ -z "${{ env.GCC_64 }}" ]; then
+            make O=out ARCH=arm ${{ env.GCC_64 }} ${{ env.DEFCONFIG_NAME }}
+            if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
+                for FILES in "${MERGE_CONFIG_FILES[@]}"; do
+                    ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/arm/configs/$FILES
+                done
+                make O=out ARCH=arm ${{ env.GCC_32 }} olddefconfig
+            fi
+            make -j$(nproc --all) O=out ARCH=arm ${{ env.GCC_32 }} 2>&1|tee error.log
+          elif [ -z "${{ env.CLANG_SOURCE }}" ]; then
+            make O=out ARCH=arm64 ${{ env.GCC_64 }} ${{ env.GCC_32 }} ${{ env.DEFCONFIG_NAME }}
+            if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
+                for FILES in "${MERGE_CONFIG_FILES[@]}"; do
+                    ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/arm64/configs/$FILES
+                done
+                make O=out ARCH=arm64 ${{ env.GCC_64 }} ${{ env.GCC_32 }} olddefconfig
+            fi
+            make -j$(nproc --all) O=out ARCH=arm64 ${{ env.GCC_64 }} ${{ env.GCC_32 }} 2>&1|tee error.log
           else
-            make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} ${{ env.DEFCONFIG_NAME }}  vendor/xiaomi/sm8250-common.config
-            make -j$(nproc --all) CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }}
+            make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} ${{ env.DEFCONFIG_NAME }}
+            if [[ "${{ env.BUILD_OTHER_CONFIG }}"  == "true" ]]; then
+                for FILES in "${MERGE_CONFIG_FILES[@]}"; do
+                    ./scripts/kconfig/merge_config.sh -O out/ -m out/.config arch/arm64/configs/$FILES
+                done
+                make CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} olddefconfig
+            fi
+            make -j$(nproc --all) CC="ccache clang" O=out ARCH=arm64 ${{ env.CUSTOM_CMDS }} ${{ env.EXTRA_CMDS }} ${{ env.GCC_64 }} ${{ env.GCC_32 }} 2>&1|tee error.log
           fi
 
       - name: Make Anykernel3 Flasher

@@ -1,4 +1,109 @@
 ## 项目更新日志
+- **Ver.1.5 Fixed 46**
+    - 移植 红米 K40 Gaming HyperOS A13 SuSFS 1.5.8 补丁步骤逻辑
+    - 修正 红米 K40 Gaming HyperOS A13 SuSFS开关
+    - 修正 支持列表 部分设备状态
+
+- **Ver.1.5 Fixed 45**
+    - 增加 Arch Linux YAML aarch64-linux-gnu-glibc 和 arm-none-eabi-newlib 包安装
+    - 增加 Ubuntu YAML libtinfo5 包安装
+
+- **Ver.1.5 Fixed 44**
+    - 修正 found_gcc.sh 检测逻辑
+    - 增加 红米 Note 10 Pro MIUI A13 设备
+
+- **Ver.1.5 Fixed 43**
+    - 重命名 syscall_hook_patches_older.sh syscall_hook_patches_early.sh
+    - 重命名 backport_patches_older.sh backport_patches_early.sh
+    - 增加 syscall_hook_patches_older.sh
+    - 修正 说明文件 有关syscall的说明
+    - 修正 所有YAML文件 syscall执行步骤
+
+- **Ver.1.5 Fixed 42**
+    - 重制 红米8 4.19 Older YAML 以及 ENV文件
+    - 撤回 小米11 Ultra YAML 以及 ENV文件 至 commit-223938c54b1121a1ee47c2817b49b1688227d949
+
+- **Ver.1.5 Fixed 41**
+    - 移植 红米8 4.19 SuSFS 1.5.8 补丁步骤逻辑
+    - 修正 红米8 4.19 额外的syscall补丁执行
+
+- **Ver.1.5 Fixed 40**
+    - 切换 小米11 Ultra HOOK_METHOD为none
+
+- **Ver.1.5 Fixed 39**
+    - 增加 示例YAML文件 有关ZYGOTE_ISO_SERVICE编译错误修复方式
+    - 修正 小米11 Ultra 有关ZYGOTE_ISO_SERVICE编译错误修复方式
+    - 修正 小米Mix2s 有关ZYGOTE_ISO_SERVICE编译错误修复方式
+    - 修正 小米平板4(Plus) 有关ZYGOTE_ISO_SERVICE编译错误修复方式
+    - 修正 红米8 4.19 有关ZYGOTE_ISO_SERVICE编译错误修复方式
+
+- **Ver.1.5 Fixed 38**
+    - 切换 小米11 Ultra HOOK_METHOD为syscall
+    - 修正 支持列表 小米11 Ultra 部分参数
+
+- **Ver.1.5 Fixed 37**
+    - 切换 小米11 Ultra KernelSU分支版本
+
+- **Ver.1.5 Fixed 36**
+    - 增加 Patch/susfs_upgrade_to_158_5.4_kprobe.patch
+    - 修正 示例YAML SuSFS 1.5.8 补丁步骤逻辑
+    - 修正 小米11 Ultra SuSFS 1.5.8 补丁步骤逻辑
+    - 修正 Patch/susfs_upgrade_to_158_5.4.patch
+
+- **Ver.1.5 Fixed 35**
+    - 移植 红米 K20 Pro SuSFS更新步骤
+    - 移植 小米11 Ultra HyperOS A14 SuSFS更新步骤
+    - 增加 Patch/susfs_upgrade_to_158_X_X.patch 系列补丁
+    - 增加 说明文件 对应词条
+    - 增加 示例YAML文件 SuSFS 更新至 1.5.8 补丁步骤
+    - 增加 小米Mix2s SuSFS 更新至 1.5.8 补丁步骤
+    - 增加 小米平板4(Plus) 更新至 1.5.8 补丁步骤
+    - 增加 小米11 Ultra HyperOS A14 SuSFS修补补丁
+    - 修正 说明文件 susfs_upgrade_to_157.patch 参考链接指向
+    - 修正 支持列表 SUSFS v1.5.7 参考链接指向
+
+- **Ver.1.5 Fixed 34**
+    - 移植 小米 10S 完整编译流程
+    - 修正 小米 10S 编译错误
+
+- **Ver.1.5 Fixed 33**
+    - 增加 示例YAML文件 引入 curlx
+    - 增加 说明文件 curlx.sh脚本说明
+    - 增加 红米8 4.19 A15 Older YAML编译方式
+    - 增加 说明文件 curlx.sh脚本说明词条
+    - 修正 示例YAML文件 wget 更改为 curlx
+    - 修正 发布列表 红米8 4.19 A15 Re:Kernel支持
+    - 切换 发布列表 红米8 4.19 A15 为 Older YAML编译方式
+
+- **Ver.1.5 Fixed 32**
+    - 修正 说明文件 susfs_upgrade_to_157.sh 参考链接
+
+- **Ver.1.5 Fixed 31**
+    - 修正 一加8 OOS13 内核版本变量获取
+    - 修正 syscall_hook_patches.sh 执行错误
+
+- **Ver.1.5 Fixed 30**
+    - 切换 一加8 OOS13 修补方式为syscall
+    - 修正 小米平板4(Plus) ROM文本
+    - 修正 红米 8 4.19 A15 ROM文本
+
+- **Ver.1.5 Fixed 29**
+    - 修正 syscall_hook_patches.sh 大量错误
+
+- **Ver.1.5 Fixed 28**
+    - 修正 发布列表 红米 8 4.19 A15 设备
+
+- **Ver.1.5 Fixed 27**
+    - 增加 Arch Linux 示例YAML libxml2-legacy 包安装
+
+- **Ver.1.5 Fixed 26**
+    - 增加 红米 8 4.19 A15 设备
+    - 增加 示例YAML 修复KPM编译异常步骤
+    - 增加 示例YAML Patch Debugger 步骤 跳过错误继续执行
+    - 增加 fix_kpm.patch 补丁
+    - 增加 说明文件 对应变量说明
+    - 增加 发布列表 红米 8 4.19 A15 设备
+
 - **Ver.1.5 Fixed 25**
     - 修正 小米Mix2s YAML cgroup v2与binder补丁执行
 

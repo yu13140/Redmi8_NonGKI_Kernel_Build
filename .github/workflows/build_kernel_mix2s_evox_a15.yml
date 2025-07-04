@@ -222,16 +222,18 @@ jobs:
           echo "UPLOADNAME=-${{ env.KERNELSU_NAME }}_$KSU_VERSION" >> $GITHUB_ENV
 
           # Patch Cgroup V2
-          # wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/cgroupv2_to_49.patch
-          # patch -p1 < cgroupv2_to_49.patch
-          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/cgroupv2_fork_to_49.patch
-          patch -p1 < cgroupv2_fork_to_49.patch
+          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/cgroupv2_to_49.patch
+          patch -p1 < cgroupv2_to_49.patch
+          # wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/cgroupv2_fork_to_49.patch
+          # patch -p1 < cgroupv2_fork_to_49.patch
 
           # Patch Binder
-          # wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/binder_freezer_to_49.patch
-          # patch -p1 < binder_freezer_to_49.patch
-          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/binder_5_15_to_49.patch
-          patch -p1 < binder_5_15_to_49.patch
+          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/binder_freezer_to_49.patch
+          patch -p1 < binder_freezer_to_49.patch
+          # wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/binder_5_15_to_49.patch
+          # patch -p1 < binder_5_15_to_49.patch
+          # wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/binder_5_4_a11_to_49.patch
+          # patch -p1 < binder_5_4_a11_to_49.patch
 
           # Patch set_memory
           cp /tmp/Patches/Patch/set_memory_to_49_and_low.patch ./
@@ -246,8 +248,12 @@ jobs:
           patch -p1 < simple_lmk_to_49.patch || true
 
           # Fix Makefile
-          wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/makefile_fixed.patch
-          patch -p1 < makefile_fixed.patch
+          # wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/makefile_5_15_fixed.patch
+          # patch -p1 < makefile_5_15_fixed.patch
+
+          # Patch Seq File
+          # wget https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Patches/refs/heads/mi_kernel/mix2s_evox_a15/seq_file_fixed.patch
+          # patch -p1 < seq_file_fixed.patch
 
           # KPM Checker
           if [[ -d "${{ env.KERNELSU_NAME }}/kernel/kpm" ]]; then
@@ -282,9 +288,9 @@ jobs:
                   bash normal_patches.sh
                   echo "execuated patch successfully."
                   if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
-                        cp /tmp/Patches/backport_patches_older.sh ./
-                        bash backport_patches_older.sh
-                        echo "execuated backport patch older successfully. "
+                        cp /tmp/Patches/backport_patches_early.sh ./
+                        bash backport_patches_early.sh
+                        echo "execuated backport patch early successfully. "
                   else
                       echo "your kernel needn't backport patch."
                   fi
@@ -297,11 +303,16 @@ jobs:
                    cp /tmp/Patches/syscall_hook_patches_older.sh device_kernel/
                    cd device_kernel
                    bash syscall_hook_patches_older.sh
-                   echo "execuated syscall patch successfully."
+                   echo "execuated syscall patch older successfully."
                    if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
-                     cp /tmp/Patches/backport_patches_older.sh ./
-                     bash backport_patches_older.sh
-                     echo "execuated backport patch older successfully. "
+                     cp /tmp/Patches/backport_patches.sh ./
+                     bash backport_patches.sh
+                     if [ "${{ env.FIRST_VERSION }}" -lt 5 ] && [ "${{ env.SECOND_VERSION }}" -lt 10 ]; then
+                         cp /tmp/Patches/Patch/backport_kernel_read_and_kernel_write_to_ksu.patch ./
+                         patch -p1 < backport_kernel_read_and_kernel_write_to_ksu.patch || true
+                         echo "execuated backport patch kernel_read and kernel_read successfully. If you current kernel version < 4.14, then u maybe manual fixed it."
+                     fi
+                     echo "execuated backport patch successfully. "
                    else
                      echo "your kernel needn't backport patch."
                    fi
@@ -481,9 +492,26 @@ jobs:
         if: env.SUSFS_UPDATE == 'true'
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
+
+          # Upgrade 1.5.7
           cp /tmp/Patches/Patch/susfs_upgrade_to_157.patch ./
 
           patch -p1 < susfs_upgrade_to_157.patch || true
+
+          # Upgrade 1.5.8
+          if grep -q "CONFIG_KSU" "fs/exec.c"; then
+            cp /tmp/Patches/Patch/susfs_upgrade_to_158_${{ env.KERNEL_VERSION }}.patch ./
+            patch -p1 < susfs_upgrade_to_158_${{ env.KERNEL_VERSION }}.patch || true
+            echo "Detected no-kprobe hook, use no-kprobe patch."
+          elif [[ "${{ env.KERNEL_VERSION }}" == "5.4" ]]; then
+            cp /tmp/Patches/Patch/susfs_upgrade_to_158_5.4_kprobe.patch ./
+            patch -p1 < susfs_upgrade_to_158_5.4_kprobe.patch || true
+            echo "Cannot detected no-kprobe hook in kernel 5.4, use kprobe patch."
+          else
+            echo "kernel version<5.4 cannot use kprobe patch."
+          fi
+          ## Fixed ZYGOTE_ISO error
+          sed -i '/#define CMD_SUSFS_HIDE_SUS_MNTS_FOR_ALL_PROCS 0x55561/a \#define CMD_SUSFS_UMOUNT_FOR_ZYGOTE_ISO_SERVICE 0x55562' include/linux/susfs_def.h
 
           # Extra SUSFS Patch
           # cp NonGKI_Kernel_Patches/[patch_folder]/[patch_file].patch ./

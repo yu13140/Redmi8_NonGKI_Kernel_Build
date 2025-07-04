@@ -32,6 +32,7 @@ jobs:
               KERNELSU_NAME
               SUSFS_ENABLE
               SUSFS_FIXED
+              SUSFS_UPDATE
               AK3_SOURCE
               AK3_BRANCH
               ROM_TEXT
@@ -156,9 +157,9 @@ jobs:
                   bash normal_patches.sh
                   echo "execuated patch successfully."
                   if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
-                        cp /tmp/Patches/backport_patches_older.sh ./
-                        bash backport_patches_older.sh
-                        echo "execuated backport patch older successfully. "
+                        cp /tmp/Patches/backport_patches_early.sh ./
+                        bash backport_patches_early.sh
+                        echo "execuated backport patch early successfully. "
                   else
                       echo "your kernel needn't backport patch."
                   fi
@@ -171,11 +172,16 @@ jobs:
                    cp /tmp/Patches/syscall_hook_patches_older.sh device_kernel/
                    cd device_kernel
                    bash syscall_hook_patches_older.sh
-                   echo "execuated syscall patch successfully."
+                   echo "execuated syscall patch older successfully."
                    if [[ "${{ env.KERNELSU_NAME }}" != "KernelSU-Next" ]]; then
-                     cp /tmp/Patches/backport_patches_older.sh ./
-                     bash backport_patches_older.sh
-                     echo "execuated backport patch older successfully. "
+                     cp /tmp/Patches/backport_patches.sh ./
+                     bash backport_patches.sh
+                     if [ "${{ env.FIRST_VERSION }}" -lt 5 ] && [ "${{ env.SECOND_VERSION }}" -lt 10 ]; then
+                         cp /tmp/Patches/Patch/backport_kernel_read_and_kernel_write_to_ksu.patch ./
+                         patch -p1 < backport_kernel_read_and_kernel_write_to_ksu.patch || true
+                         echo "execuated backport patch kernel_read and kernel_read successfully. If you current kernel version < 4.14, then u maybe manual fixed it."
+                     fi
+                     echo "execuated backport patch successfully. "
                    else
                      echo "your kernel needn't backport patch."
                    fi
@@ -232,6 +238,26 @@ jobs:
             cd ${{ env.KERNELSU_NAME }}
             patch -p1 < 10_enable_susfs_for_ksu.patch || true
           fi
+
+      - name: Updated SUSFS Version
+        if: env.SUSFS_UPDATE == 'true'
+        run: |
+          cd $GITHUB_WORKSPACE/device_kernel/
+
+          # Upgrade 1.5.7
+          cp /tmp/Patches/Patch/susfs_upgrade_to_157.patch ./
+
+          patch -p1 < susfs_upgrade_to_157.patch || true
+
+          # Upgrade 1.5.8
+          cp /tmp/Patches/Patch/susfs_upgrade_to_158_${{ env.KERNEL_VERSION }}.patch ./
+
+          patch -p1 < susfs_upgrade_to_158_${{ env.KERNEL_VERSION }}.patch || true
+
+          # Extra SUSFS Patch
+          # cp NonGKI_Kernel_Patches/[patch_folder]/[patch_file].patch ./
+
+          # patch -p1 < [patch_file].patch || true
 
       - name: Fixed Kernel Patch
         if: env.SUSFS_ENABLE == 'true' && env.SUSFS_FIXED == 'true'

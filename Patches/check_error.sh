@@ -107,6 +107,9 @@ process_error_block() {
     elif grep -q "not found (required by clang) " <<< "${error_block[@]}"; then
         error_type="Clang版本异常"
         suggestion="建议: 当前编译所用系统版本过老，若是20.04请使用22.04，反之latest。"
+    elif grep -q "multiple definition of 'yylloc'" <<< "${error_block[@]}"; then
+        error_type="内核缺陷"
+        suggestion="建议: 将scripts/dtc/dtc-lexer.lex.c_shipped中的YYLTYPE yylloc;修改成extern YYLTYPE yylloc;"
     fi
 
     echo "Error: $error_type"

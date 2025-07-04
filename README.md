@@ -80,10 +80,12 @@ Github放弃了Ubuntu 20.04，若你有需求，或者使用Clang Proton，请�
   - **PROFILE_NAME** - 填写成你修改好的env环境变量文件的名称，例如codename_rom_template.env
   - **KERNELSU_SUS_PATCH** - 如果你的KernelSU不属于KernelSU-Next，并且也没有针对SuSFS的修补分支，可以启用该项目（true），但我们不建议这么做，因为分支KernelSU的魔改情况严重，手动修补已经不能顺应现在的时代了
   - **KPM_ENABLE** - (实验性⚠)启用对SukiSU-Ultra的KPM编译支持，该项为实验项，请小心启用
+  - **KPM_FIX** - (实验性⚠)当前KPM功能可能存在[“栈帧”溢出漏洞](https://github.com/SukiSU-Ultra/SukiSU-Ultra/issues/141)导致编译失败，若你存在该问题请启用本项
   - **KPM_PATCH_SOURCE** - (实验性⚠)通常你不需要自行提供patch二进制下载链接，除非你有额外需求
   - **GENERATE_DTB** - 如果你的内核编译后，需要DTB文件（不是.dtb、.dts、.dtsi），则可以开启本项自动执行生成DTB步骤
   - **GENERATE_CHIP** - 设定对应设备CPU，并提供给DTB和KPM功能用于识别，通常支持qcom、mediatek，但我们不确定其他CPU是否支持
   - **BUILD_DEBUGGER** - 若需要提供出错时的报告可使用该选项，目前提供patch错误rej文件的输出，以及基础的编译错误分析，其他功能可期待未来更新
+  - **SKIP_PATCH** - 当启用DEBUGGER后，若你需要展示错误文件信息但又不希望影响编译流程，则可开启本项
   - **BUILD_OTHER_CONFIG** - 若你需要合并内核源码中自带的其他.config文件，可启用本项，但是需要自行修改”Build Kernel“中数组MERGE_CONFIG_FILES中的内容
   - **FREE_MORE_SPACE** - 若你认为当前的空间不足，则可以启用该项来获得更多空间释放，默认情况下可获得约88GB空间，启用本项可获得102GB空间，但执行时间会增加1-2分钟（仅限默认YAML，Arch Linux或Ubuntu 20.04仅可获得14-20GB空间）
   - **REKERNEL_ENABLE** - 如果你认为你的设备具备运行[Re:Kernel](https://github.com/Sakion-Team/Re-Kernel)的条件，并且你需要Re:Kernel，则可以启用本项，true或者false
@@ -156,6 +158,12 @@ Github放弃了Ubuntu 20.04，若你有需求，或者使用Clang Proton，请�
   
 - **syscall_hook_patches_older.sh**
   - 变量：HOOK_METHOD -> syscall 和 HOOK_OLDER -> true
+  - 用于执行backslashxx大佬最新实现的最小化手动修补(Syscall)功能，对旧版本编译器兼容性不是很好，但适配支持了内核版本≤3.18（ARMV7A）设备，会自动执行对缺少SELinux相关权限的旧版本内核（内核版本≤4.9），因此全内核可用
+    - 版本：1.4
+  - 参考：https://github.com/backslashxx/KernelSU/issues/5
+  
+- **syscall_hook_patches_early.sh**
+  - 暂无执行方式
   - syscall的最初版本，适用于需要syscall但执行最新版失败的情况
   - 参考：https://github.com/backslashxx/KernelSU/issues/5
   
@@ -164,8 +172,8 @@ Github放弃了Ubuntu 20.04，若你有需求，或者使用Clang Proton，请�
   - 用于执行对Non-GKI内核的反向移植，除了KernelSU-Next和SukiSU-Ultra可以实现自动反向移植外，其他的分支均无法实现
   - 参考：https://github.com/backslashxx/KernelSU/issues/4#issue-2818274642
   
-- **backport_patches_older.sh** 
-  - 变量：HOOK_OLDER -> true
+- **backport_patches_early.sh** 
+  - 自动执行
   - 旧版向后移植方案，用于normal patch和syscall旧版
   - 参考：https://github.com/backslashxx/KernelSU/issues/4#issue-2818274642
 
@@ -182,7 +190,15 @@ Github放弃了Ubuntu 20.04，若你有需求，或者使用Clang Proton，请�
 - **Patch/susfs_upgrade_to_157.patch**
   - 变量：(env文件)SUSFS_UPDATE -> true
   - 对停止更新的Non-GKI设备的SuSFS进行更新，从v1.5.5更新至v1.5.7
-  - 参考：https://github.com/rsuntk/android_kernel_asus_sdm660-4.19/compare/c7d82bf8607704c22a8a869c4611c7cf3d22ce31..1ea2cbd7659167e62d2265632710f084c45f3ca1
+  - 参考：https://github.com/rsuntk/android_kernel_asus_sdm660-4.19/commit/b3c85f330b135baf5c101b07f027e69e75f42060
+  
+- **Patch/susfs_upgrade_to_158_X_X.patch**
+  - 变量：(env文件)SUSFS_UPDATE -> true
+  - 对停止更新的Non-GKI设备的SuSFS进行更新，从v1.5.7更新至v1.5.8
+  - 参考：
+    - https://github.com/rsuntk/android_kernel_asus_sdm660-4.19/commit/41678dd9290f04d98b9f0523574e11f98c7ce7c1
+    - https://github.com/rsuntk/android_kernel_asus_sdm660-4.19/commit/60008290523a235282176b328f390777282024c9
+    - https://github.com/rsuntk/android_kernel_asus_sdm660-4.19/commit/999ae11965ac2b4f3d3c7fbebc8e09cc8bbd0fce
 
 - **Patch/set_memory_to_49_and_low.patch**
   - 变量：KPM_ENABLE -> true
@@ -194,9 +210,19 @@ Github放弃了Ubuntu 20.04，若你有需求，或者使用Clang Proton，请�
   - 用于执行对Non-GKI内核（**内核版本≤4.9**）的反向移植，可能存在需要二次修补的情况
   - 参考：https://github.com/backslashxx/KernelSU/issues/4#issue-2818274642
   
+- **Patch/fix_kpm.patch**
+  - 变量：KPM_FIX -> true
+  - 用于应对**栈帧溢出漏洞**导致的编译失败问题
+  - 参考：https://github.com/SukiSU-Ultra/SukiSU-Ultra/issues/141
+  
 - **Rekernel/rekernel-X.X.patch**
   - 变量：REKERNEL_ENABLE -> true
   - 让内核支持Re:Kernel的补丁文件，YAML会根据你的内核版本自动判断使用的补丁，不过若你是4.9内核且当前补丁不可用，就需要将补丁修改成rekernel-4.9-for-fixed.patch后尝试，不支持内核版本≤4.4设备
   - 参考：https://github.com/Sakion-Team/Re-Kernel/blob/main/Integrate/README_CN.md
+  
+- **Bin/curlx.sh**
+  - 自动执行
+  - 用于更加便捷的执行包括断点续传在内的curl命令
+  - 参考：由[@yu13140](https://github.com/yu13140)提供更新
   
 最后提醒⚠️：非上述提示的步骤理论上不需要你做任何修改，我已经尽可能实现多情况判定

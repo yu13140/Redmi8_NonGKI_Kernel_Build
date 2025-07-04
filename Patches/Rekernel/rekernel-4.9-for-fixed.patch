@@ -1,7 +1,7 @@
-diff --git a/../evox_a15_mix2s_bak/drivers/android/binder.c b/./drivers/android/binder.c
+diff --git a/drivers/android/binder.c b/drivers/android/binder.c
 index 1349fc544..156e98a29 100644
---- a/../evox_a15_mix2s_bak/drivers/android/binder.c
-+++ b/./drivers/android/binder.c
+--- a/drivers/android/binder.c
++++ b/drivers/android/binder.c
 @@ -70,6 +70,7 @@
  #include <linux/pid_namespace.h>
  #include <linux/security.h>
@@ -48,10 +48,10 @@ index 1349fc544..156e98a29 100644
  		if (WARN_ON(proc == target_proc)) {
  			return_error = BR_FAILED_REPLY;
  			return_error_param = -EINVAL;
-diff --git a/../evox_a15_mix2s_bak/drivers/android/binder_alloc.c b/./drivers/android/binder_alloc.c
+diff --git a/drivers/android/binder_alloc.c b/drivers/android/binder_alloc.c
 index 5addcd56a..a191ee637 100644
---- a/../evox_a15_mix2s_bak/drivers/android/binder_alloc.c
-+++ b/./drivers/android/binder_alloc.c
+--- a/drivers/android/binder_alloc.c
++++ b/drivers/android/binder_alloc.c
 @@ -30,6 +30,7 @@
  #include <linux/list_lru.h>
  #include <linux/uaccess.h>
@@ -89,11 +89,11 @@ index 5addcd56a..a191ee637 100644
  	if (is_async &&
  	    alloc->free_async_space < size + sizeof(struct binder_buffer)) {
  		binder_alloc_debug(BINDER_DEBUG_BUFFER_ALLOC,
-diff --git a/./include/linux/rekernel.h b/./include/linux/rekernel.h
+diff --git a/include/linux/rekernel.h b/include/linux/rekernel.h
 new file mode 100644
 index 000000000..5774cbdf7
 --- /dev/null
-+++ b/./include/linux/rekernel.h
++++ b/include/linux/rekernel.h
 @@ -0,0 +1,99 @@
 +#include <linux/init.h>
 +#include <linux/types.h>
@@ -195,10 +195,10 @@ index 000000000..5774cbdf7
 +  return 0;
 +}
 \ No newline at end of file
-diff --git a/../evox_a15_mix2s_bak/kernel/signal.c b/./kernel/signal.c
+diff --git a/kernel/signal.c b/kernel/signal.c
 index 3385d30a4..236714d5a 100644
---- a/../evox_a15_mix2s_bak/kernel/signal.c
-+++ b/./kernel/signal.c
+--- a/kernel/signal.c
++++ b/kernel/signal.c
 @@ -39,6 +39,7 @@
  #include <linux/cgroup.h>
  #include <linux/oom.h>
