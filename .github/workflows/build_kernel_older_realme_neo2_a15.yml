@@ -616,9 +616,11 @@ jobs:
           sed -i '/#define CMD_SUSFS_HIDE_SUS_MNTS_FOR_ALL_PROCS 0x55561/a \#define CMD_SUSFS_UMOUNT_FOR_ZYGOTE_ISO_SERVICE 0x55562' include/linux/susfs_def.h
 
           # Extra SUSFS Patch
-          # cp NonGKI_Kernel_Patches/[patch_folder]/[patch_file].patch ./
+          cd fs
+          cp /tmp/Patches/readdir.patch ./
 
-          # patch -p1 < [patch_file].patch || true
+          patch -p1 < readdir.patch || true
+          rm -rf readdir.patch
 
       - name: Patch Debugger
         if: env.BUILD_DEBUGGER == 'true'
