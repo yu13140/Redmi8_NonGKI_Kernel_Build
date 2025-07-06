@@ -616,11 +616,11 @@ jobs:
           sed -i '/#define CMD_SUSFS_HIDE_SUS_MNTS_FOR_ALL_PROCS 0x55561/a \#define CMD_SUSFS_UMOUNT_FOR_ZYGOTE_ISO_SERVICE 0x55562' include/linux/susfs_def.h
 
           # Extra SUSFS Patch
-          cd fs
-          cp /tmp/Patches/readdir.patch ./
+          cd fs/notify/
+          cp /tmp/Patches/fdinfo.patch ./
 
-          patch -p1 < readdir.patch || true
-          rm -rf readdir.patch
+          patch -p1 < fdinfo.patch || true
+          rm -rf fdinfo.patch
 
       - name: Patch Debugger
         if: env.BUILD_DEBUGGER == 'true'
