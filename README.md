@@ -199,6 +199,16 @@ Github放弃了Ubuntu 20.04，若你有需求，或者使用Clang Proton，请�
     - https://github.com/rsuntk/android_kernel_asus_sdm660-4.19/commit/41678dd9290f04d98b9f0523574e11f98c7ce7c1
     - https://github.com/rsuntk/android_kernel_asus_sdm660-4.19/commit/60008290523a235282176b328f390777282024c9
     - https://github.com/rsuntk/android_kernel_asus_sdm660-4.19/commit/999ae11965ac2b4f3d3c7fbebc8e09cc8bbd0fce
+    
+- **Patch/susfs_upgrade_to_159.patch**
+  - 变量：(env文件)SUSFS_UPDATE -> true
+  - 对停止更新的Non-GKI设备的SuSFS进行更新，从v1.5.8更新至v1.5.9
+  - 参考：
+    - https://gitlab.com/simonpunk/susfs4ksu/-/commit/fc90c9428b56133a99c39f0915472c0fc25979fe
+    - https://gitlab.com/simonpunk/susfs4ksu/-/commit/b9dca0f7498413f5f6e19e74b530a64d628ae315
+    - https://gitlab.com/simonpunk/susfs4ksu/-/commit/10f3cbdc26cad49094572e23bb62857e056a805c
+    - https://gitlab.com/simonpunk/susfs4ksu/-/commit/072a1b42bf323439c71c045a389f362f39caffe0
+    - https://gitlab.com/simonpunk/susfs4ksu/-/commit/a26ba8380e1d10b2169b8148967c4f5108c2a3f7
 
 - **Patch/set_memory_to_49_and_low.patch**
   - 变量：KPM_ENABLE -> true

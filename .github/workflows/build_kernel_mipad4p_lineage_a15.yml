@@ -560,6 +560,11 @@ jobs:
           ## Fixed ZYGOTE_ISO error
           sed -i '/#define CMD_SUSFS_HIDE_SUS_MNTS_FOR_ALL_PROCS 0x55561/a \#define CMD_SUSFS_UMOUNT_FOR_ZYGOTE_ISO_SERVICE 0x55562' include/linux/susfs_def.h
 
+          # Upgrade 1.5.9
+          cp /tmp/Patches/Patch/susfs_upgrade_to_159.patch ./
+
+          patch -p1 < susfs_upgrade_to_159.patch || true
+
           # Extra SUSFS Patch
           # cp NonGKI_Kernel_Patches/[patch_folder]/[patch_file].patch ./
 

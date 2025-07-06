@@ -1,4 +1,4 @@
-name: Build Kernel Older Redmi K40 Gaming (HyperOS A13) with KSU
+name: Build Kernel Older Redmi K40 Gaming (MIUI13 A12) with KSU and SUSFS
 on:
   workflow_call:
   workflow_dispatch:
@@ -6,8 +6,8 @@ env:
   PYTHON_VERSION: "3" # Only 2(Ubuntu 22.04) or 3(Any OS Versions).
   PACK_METHOD: "Anykernel3" # Anykernel3 need SOURCE and BRANCH, MKBOOTIMG needn't it.
   KERNELSU_METHOD: "shell" # shell, manual and only.
-  PATCHES_SOURCE: "author/source" # [your_name]/[your_patch] -> gooder123/NonGKI_Patcher
-  PATCHES_BRANCH: "branch" # [your_branch] -> main
+  PATCHES_SOURCE: "JackA1ltman/NonGKI_Kernel_Patches" # [your_name]/[your_patch] -> gooder123/NonGKI_Patcher
+  PATCHES_BRANCH: "mi_kernel" # [your_branch] -> main
   HOOK_METHOD: "normal" # manual hook method,can choice syscall and normal.
   HOOK_OLDER: "false" # contain backport older patch and syscall older patch.
   PROFILE_NAME: "ares_miui13_a12.env" # your profile name.
@@ -580,22 +580,38 @@ jobs:
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
-          cp NonGKI_Kernel_Patches/[patch_folder]/[patch_file].patch ./
+          cp NonGKI_Kernel_Patches/k40g_miui13/susfs_155_fixed.patch ./
 
-          patch -p1 < [patch_file].patch || true
+          patch -p1 < susfs_155_fixed.patch || true
 
       - name: Updated SUSFS Version
         if: env.SUSFS_ENABLE == 'true' && env.SUSFS_UPDATE == 'true'
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
+          # Upgrade 1.5.7
           cp /tmp/Patches/Patch/susfs_upgrade_to_157.patch ./
 
           patch -p1 < susfs_upgrade_to_157.patch || true
 
-          # Extra SUSFS Patch
-          # cp NonGKI_Kernel_Patches/[patch_folder]/[patch_file].patch ./
+          # Upgrade 1.5.8
+          if grep -q "CONFIG_KSU" "fs/exec.c"; then
+            cp /tmp/Patches/Patch/susfs_upgrade_to_158_${{ env.KERNEL_VERSION }}.patch ./
+            patch -p1 < susfs_upgrade_to_158_${{ env.KERNEL_VERSION }}.patch || true
+            echo "Detected no-kprobe hook, use no-kprobe patch."
+          elif [[ "${{ env.KERNEL_VERSION }}" == "5.4" ]]; then
+            cp /tmp/Patches/Patch/susfs_upgrade_to_158_5.4_kprobe.patch ./
+            patch -p1 < susfs_upgrade_to_158_5.4_kprobe.patch || true
+            echo "Cannot detected no-kprobe hook in kernel 5.4, use kprobe patch."
+          else
+            echo "kernel version<5.4 cannot use kprobe patch."
+          fi
+          ## Fixed ZYGOTE_ISO error
+          sed -i '/#define CMD_SUSFS_HIDE_SUS_MNTS_FOR_ALL_PROCS 0x55561/a \#define CMD_SUSFS_UMOUNT_FOR_ZYGOTE_ISO_SERVICE 0x55562' include/linux/susfs_def.h
 
-          # patch -p1 < [patch_file].patch || true
+          # Extra SUSFS Patch
+          cp NonGKI_Kernel_Patches/k40g_miui13/susfs_158_fixed.patch ./
+
+          patch -p1 < susfs_158_fixed.patch || true
 
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
