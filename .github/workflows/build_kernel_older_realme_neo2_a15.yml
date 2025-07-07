@@ -617,11 +617,17 @@ jobs:
 
           # Extra SUSFS Patch
           cd fs
+
           cp /tmp/Patches/readdir.patch ./
           patch -p1 < readdir.patch || true
           rm -rf readdir.patch
 
+          cp /tmp/Patches/namespace.patch ./
+          patch -p1 < namespace.patch || true
+          rm -rf namespace.patch
+
           cd notify
+
           cp /tmp/Patches/fdinfo.patch ./
           patch -p1 < fdinfo.patch || true
           rm -rf fdinfo.patch
