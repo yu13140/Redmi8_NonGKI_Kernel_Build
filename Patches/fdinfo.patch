@@ -1,5 +1,5 @@
 --- a/fdinfo.c	2025-07-05 17:21:54.000000000 +0800
-+++ b/fdinfo.c	2025-07-07 15:37:03.601893200 +0800
++++ b/fdinfo.c	2025-07-07 16:04:07.815012951 +0800
 @@ -1,221 +1,214 @@
 -// SPDX-License-Identifier: GPL-2.0
 -#include <linux/file.h>
@@ -343,7 +343,7 @@
 +			}
 +			seq_printf(m, "inotify wd:%x ino:%lx sdev:%x mask:%x ignored_mask:0 ",
 +			   inode_mark->wd, path.dentry->d_inode->i_ino, path.dentry->d_inode->i_sb->s_dev,
-+			   inode_mark->mask);  // 修复点：直接使用 inode_mark->mask
++			   mark->mask);  // 正确修复：使用 mark->mask
 +			show_mark_fhandle(m, path.dentry->d_inode);
 +			seq_putc(m, '\n');
 +			iput(inode);
@@ -357,7 +357,7 @@
 +#endif
 +		seq_printf(m, "inotify wd:%x ino:%lx sdev:%x mask:%x ignored_mask:0 ",
 +			   inode_mark->wd, inode->i_ino, inode->i_sb->s_dev,
-+			   inode_mark->mask);  // 修复点：直接使用 inode_mark->mask
++			   mark->mask);  // 正确修复：使用 mark->mask
 +		show_mark_fhandle(m, inode);
 +		seq_putc(m, '\n');
 +		iput(inode);
