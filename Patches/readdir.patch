@@ -1,6 +1,30 @@
---- a/readdir.c	2025-07-05 17:22:00.000000000 +0800
-+++ b/readdir.c	2025-07-06 02:24:34.974282700 +0800
-@@ -587,11 +587,7 @@
+--- a/readdir.c	2025-07-07 08:09:04.000000000 +0800
++++ b/readdir.c	2025-07-08 01:51:25.663146700 +0800
+@@ -278,11 +278,6 @@
+ 	struct inode *inode;
+ #endif
+ 
+-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+-	if (likely(current->susfs_task_state & TASK_STRUCT_NON_ROOT_USER_APP_PROC) && susfs_sus_ino_for_filldir64(ino)) {
+-		return 0;
+-	}
+-#endif
+ 	buf->error = verify_dirent_name(name, namlen);
+ 	if (unlikely(buf->error))
+ 		return buf->error;
+@@ -426,11 +421,6 @@
+ 	struct inode *inode;
+ #endif
+ 
+-#ifdef CONFIG_KSU_SUSFS_SUS_PATH
+-	if (likely(current->susfs_task_state & TASK_STRUCT_NON_ROOT_USER_APP_PROC) && susfs_sus_ino_for_filldir64(ino)) {
+-		return 0;
+-	}
+-#endif
+ 	buf->error = verify_dirent_name(name, namlen);
+ 	if (unlikely(buf->error))
+ 		return buf->error;
+@@ -587,11 +577,6 @@
  
  	if (buf->result)
  		return -EINVAL;
@@ -9,7 +33,6 @@
 -		return 0;
 -	}
 -#endif
-+
  	d_ino = ino;
  	if (sizeof(d_ino) < sizeof(ino) && d_ino != ino) {
  		buf->result = -EOVERFLOW;
