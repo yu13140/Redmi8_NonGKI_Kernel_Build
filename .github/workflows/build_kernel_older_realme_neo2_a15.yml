@@ -119,6 +119,10 @@ jobs:
           else
             apt-get install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python3 -y
             apt-get install zstd libc6 binutils libc6-dev-i386 gcc g++ p7zip p7zip-full cpio wget curl -y
+            # Install Libtinfo5
+            ${{ env.CURLX }} http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb libtinfo5.deb
+            sudo apt install ./libtinfo5.deb
+            rm -f libtinfo5.deb
           fi
 
       - name: Install GNU GCC
@@ -577,11 +581,6 @@ jobs:
             echo "Your kernel not supported it."
           fi
 
-          # Fixed Patches
-          cp NonGKI_Kernel_Patches/redmi_8_419/rekernel_fixed.patch ./
-
-          patch -p1 < rekernel_fixed.patch
-
       - name: Fixed Kernel Patch
         if: env.SUSFS_ENABLE == 'true' && env.SUSFS_FIXED == 'true'
         shell: bash
@@ -596,6 +595,8 @@ jobs:
         shell: bash
         run: |
           cd $GITHUB_WORKSPACE/device_kernel/
+
+          # Upgrade 1.5.7
           cp /tmp/Patches/Patch/susfs_upgrade_to_157.patch ./
 
           patch -p1 < susfs_upgrade_to_157.patch || true
@@ -614,6 +615,11 @@ jobs:
           fi
           ## Fixed ZYGOTE_ISO error
           sed -i '/#define CMD_SUSFS_HIDE_SUS_MNTS_FOR_ALL_PROCS 0x55561/a \#define CMD_SUSFS_UMOUNT_FOR_ZYGOTE_ISO_SERVICE 0x55562' include/linux/susfs_def.h
+
+          # Upgrade 1.5.9
+          cp /tmp/Patches/Patch/susfs_upgrade_to_159.patch ./
+
+          patch -p1 < susfs_upgrade_to_159.patch || true
 
           # Extra SUSFS Patch
           cd fs
