@@ -752,14 +752,6 @@ jobs:
           path: |
             device_kernel/include
 
-      - name: Upload Build Artifacts For Packing Error 3
-        if: ${{ always() && env.BUILD_DEBUGGER == 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: bankai
-          path: |
-            device_kernel/.config
-
       - name: Analyze compile error
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
         shell: bash
