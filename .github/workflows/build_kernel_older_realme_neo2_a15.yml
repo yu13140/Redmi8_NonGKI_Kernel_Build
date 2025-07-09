@@ -758,7 +758,7 @@ jobs:
         with:
           name: bankai
           path: |
-            device_kernel/arch/arm64/configs/bankai_defconfig
+            device_kernel/.config
 
       - name: Analyze compile error
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
