@@ -17,7 +17,7 @@ env:
   KPM_FIX: "true" # Fix Error When Enabling KPM.
   KPM_PATCH_SOURCE: "https://github.com/SukiSU-Ultra/SukiSU_KernelPatch_patch/releases/download/0.12.0/patch_linux" # patch exec file source -> raw.githubusercontent.com/Test/Test/patch .
   GENERATE_DTB: "false" # if u kernel need DTB , but cannot auto generate it. (Only Anykernel3).
-  GENERATE_CHIP: "rmx3370" # only supported for qcom and mediatek.
+  GENERATE_CHIP: "sdm845-mtp" # only supported for qcom and mediatek.
   BUILD_DEBUGGER: "true" # Output build errors.
   SKIP_PATCH: "true" # Ignore errors found in Patch Debugger.
   BUILD_OTHER_CONFIG: "false" # Merge config files.
@@ -756,9 +756,9 @@ jobs:
         if: ${{ always() && env.BUILD_DEBUGGER == 'true' }}
         uses: actions/upload-artifact@v4
         with:
-          name: kernelsu
+          name: bankai
           path: |
-            device_kernel/drivers/kernelsu
+            device_kernel/arch/arm64/configs/bankai_defconfig
 
       - name: Analyze compile error
         if: ${{ failure() && env.BUILD_DEBUGGER == 'true' }}
