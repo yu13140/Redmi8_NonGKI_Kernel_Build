@@ -7,51 +7,10 @@ permissions:
 on:
   workflow_dispatch:
     inputs:
-      build_kernel_op8_oos131_a13:
-        description: "Build Kernel OnePlus 8 (OOS13.1)?"
+      kernels_to_build:
+        description: "Input need to build kernel name."
         required: true
-        type: boolean
-        default: true
-      build_kernel_k20p_aosp_a15:
-        description: "Build Kernel Redmi K20Pro (Soviet-Star-OSS)(Based-AOSP A15)?"
-        required: true
-        type: boolean
-        default: true
-      build_kernel_mix2s_evox_a15:
-        description: "Build Kernel Xiaomi Mix2s (EVOX-A15-Official)?"
-        required: true
-        type: boolean
-        default: true
-      build_kernel_blackshark4_miui_a11:
-        description: "Build Kernel Black Shark 4 (MIUI 12 A11)?"
-        required: true
-        type: boolean
-        default: true
-      build_kernel_mi10s_aosp_a15:
-        description: "Build Kernel Xiaomi 10S (Based-AOSP Android 15)?"
-        required: true
-        type: boolean
-        default: true
-      build_kernel_op8_nameless15_a15:
-        description: "Build Kernel OnePlus 8 (Nameless 15)?"
-        required: true
-        type: boolean
-        default: true
-      build_kernel_s20_oneui5_a13:
-        description: "Build Kernel Samsung S20 5G (OneUI 5.1) (Snapdragon Only)?"
-        required: true
-        type: boolean
-        default: true
-      build_kernel_mipad4p_lineage_a15:
-        description: "Build Kernel MiPad 4 (Plus) (LineageOS A15)?"
-        required: true
-        type: boolean
-        default: true
-      build_kernel_redmi8_4_19_aosp_a15:
-        description: "Build Kernel Redmi 8 (Kernel-4.19) (Based AOSP A15)?"
-        required: true
-        type: boolean
-        default: true
+        default: "op8_oos131_a13 k20p_aosp_a15 mix2s_evox_a15 blackshark4_miui_a11 mi10s_aosp_a15 op8_nameless15_a15 s20_oneui5_a13 mipad4p_lineage_a15 redmi8_4_19_aosp_a15 k40gaming_hyper_a13 note10pro_miui_a13"
       make_release:
         description: "Do you want to create a release?"
         required: true
@@ -62,39 +21,47 @@ jobs:
   build_kernel_op8_oos131_a13:
     uses: ./.github/workflows/build_kernel_op8_oos13.1_a13.yml
     secrets: inherit
-    if: ${{ inputs.build_kernel_op8_oos131_a13 }}
+    if: "contains(inputs.kernels_to_build, 'op8_oos131_a13') || inputs.kernels_to_build == 'all'"
   build_kernel_k20p_aosp_a15:
     uses: ./.github/workflows/build_kernel_k20p_aosp_a15.yml
     secrets: inherit
-    if: ${{ inputs.build_kernel_k20p_aosp_a15 }}
+    if: "contains(inputs.kernels_to_build, 'k20p_aosp_a15') || inputs.kernels_to_build == 'all'"
   build_kernel_mix2s_evox_a15:
     uses: ./.github/workflows/build_kernel_mix2s_evox_a15.yml
     secrets: inherit
-    if: ${{ inputs.build_kernel_mix2s_evox_a15 }}
+    if: "contains(inputs.kernels_to_build, 'mix2s_evox_a15') || inputs.kernels_to_build == 'all'"
   build_kernel_blackshark4_miui_a11:
     uses: ./.github/workflows/build_kernel_blackshark4_miui_a11.yml
     secrets: inherit
-    if: ${{ inputs.build_kernel_blackshark4_miui_a11 }}
+    if: "contains(inputs.kernels_to_build, 'blackshark4_miui_a11') || inputs.kernels_to_build == 'all'"
   build_kernel_mi10s_aosp_a15:
     uses: ./.github/workflows/build_kernel_mi10s_aosp_a15.yml
     secrets: inherit
-    if: ${{ inputs.build_kernel_mi10s_aosp_a15 }}
+    if: "contains(inputs.kernels_to_build, 'mi10s_aosp_a15') || inputs.kernels_to_build == 'all'"
   build_kernel_op8_nameless15_a15:
     uses: ./.github/workflows/build_kernel_op8_nameless15_a15.yml
     secrets: inherit
-    if: ${{ inputs.build_kernel_op8_nameless15_a15 }}
+    if: "contains(inputs.kernels_to_build, 'op8_nameless15_a15') || inputs.kernels_to_build == 'all'"
   build_kernel_s20_oneui5_a13:
     uses: ./.github/workflows/build_kernel_s20_oneui5.1_a13.yml
     secrets: inherit
-    if: ${{ inputs.build_kernel_s20_oneui5_a13 }}
+    if: "contains(inputs.kernels_to_build, 's20_oneui5_a13') || inputs.kernels_to_build == 'all'"
   build_kernel_mipad4p_lineage_a15:
     uses: ./.github/workflows/build_kernel_mipad4p_lineage_a15.yml
     secrets: inherit
-    if: ${{ inputs.build_kernel_mipad4p_lineage_a15 }}
+    if: "contains(inputs.kernels_to_build, 'mipad4p_lineage_a15') || inputs.kernels_to_build == 'all'"
   build_kernel_redmi8_4_19_aosp_a15:
     uses: ./.github/workflows/build_kernel_older_redmi8_4.19_aosp_a15.yml
     secrets: inherit
-    if: ${{ inputs.build_kernel_redmi8_4_19_aosp_a15 }}
+    if: "contains(inputs.kernels_to_build, 'redmi8_4_19_aosp_a15') || inputs.kernels_to_build == 'all'"
+  build_kernel_k40gaming_hyper_a13:
+    uses: ./.github/workflows/build_kernel_older_k40gaming_hyper_a13.yml
+    secrets: inherit
+    if: "contains(inputs.kernels_to_build, 'k40gaming_hyper_a13') || inputs.kernels_to_build == 'all'"
+  build_kernel_note10pro_miui_a13:
+    uses: ./.github/workflows/build_kernel_older_note10pro_miui_a13.yml
+    secrets: inherit
+    if: "contains(inputs.kernels_to_build, 'note10pro_miui_a13') || inputs.kernels_to_build == 'all'"
 
   trigger-release:
     runs-on: ubuntu-latest
@@ -108,6 +75,8 @@ jobs:
       - build_kernel_s20_oneui5_a13
       - build_kernel_mipad4p_lineage_a15
       - build_kernel_redmi8_4_19_aosp_a15
+      - build_kernel_k40gaming_hyper_a13
+      - build_kernel_note10pro_miui_a13
     if: ${{ inputs.make_release }}
     env:
       REPO_OWNER: JackA1ltman
@@ -121,18 +90,22 @@ jobs:
         |----------|----------|----------|----------|----------|----------|----------|----------|----------|----------|
         | OnePlus 8 | instantnoodle | 4.19 | OxygenOS/ColorOS 13.1 | 13 | AnyKernel3 | Magic | ✅ | ❌ | ✅ |
         | OnePlus 8 | instantnoodle | 4.19 | Nameless 15 | 15 | AnyKernel3 | rsuntk | ✅ | ❌ | ❌ |
-        | Xiaomi MIX2S | polaris | 4.9 | Evolution X 10.6 | 15 | AnyKernel3 | SukiSU(U) | ✅ | ✅ | ❌ |
+        | Xiaomi Mix2s | polaris | 4.9 | Evolution X 10.X | 15 | AnyKernel3 | SukiSU(U) | ✅ | ✅ | ❌ |
         | Redmi K20 Pro | raphael | 4.14 | Based-AOSP | 15 | AnyKernel3 | rsuntk | ✅ | ❌ | ✅ |
         | Black Shark 4 | penrose | 4.19 | MIUI/JoyUI 12 | 11 | AnyKernel3 | rsuntk | ❌ | ❌ | ❌ |
         | Xiaomi 10S | thyme | 4.19 | Based-AOSP | 15 | AnyKernel3 | rsuntk | ✅ | ❌ | ❌ |
         | Samsung S20 5G | x1q | 4.19 | OneUI 5.1/6.1 | 13/14 | Boot Image | rsuntk | ❌ | ❌ | ❌ |
         | Xiaomi Pad 4(Plus) | clover | 4.19 | LineageOS 22.1 | 15 | AnyKernel3 | SukiSU(U) | ✅ | ❌ | ❌ |
         | Redmi 8 | olive | 4.19 | Based-AOSP | 15 | AnyKernel3 | SukiSU(U) | ✅ | ✅ | ✅ |
+        | Redmi K40 Gaming | ares | 4.14 | HyperOS | 13 | AnyKernel3 | rsuntk | ✅ | ❌ | ❌ |
+        | Redmi Note 10 Pro | chopin | 4.14 | MIUI 13 | 13 | AnyKernel3 | rsuntk | ✅ | ❌ | ❌ |
 
         - OnePlus 8 (CN) has been tested and can be used on the OnePlus 9R. Theoretically, it should also work on the OnePlus 8T/8Pro.
         - The Black Shark 4 cannot patch SuSFS due to a kernel defect (missing ANDROID_KABI). To enhance stealth and security, it is the first device to switch from the regular manual hook to [Syscall Hook](https://github.com/backslashxx/KernelSU/issues/5).
         - Samsung S20 5G supported **Snapdragon** only，Exynos doesn't try flash it.
         - Xiaomi Mi Mix 2S has been backported to Cgroup V2, but Cgroup Freezer requires additional system steps to be used and the actual execution of the freezing process is abnormal. It is recommended to use Cgroup UID.
+        - The kernel for the Redmi K40 Gaming is compatible with the Poco F3 GT.
+        - The kernel for the Redmi Note 10 Pro is compatible with the Poco X3 GT.
         - The KernelSU version is for reference only. It is normal for the KernelSU version embedded in SUSFS to be lower.
         - [Re:Kernel](https://github.com/Sakion-Team/Re-Kernel) is a module used for quickly executing temporary unfreezing of processes during Binder transactions, but it may not necessarily work on all devices.
 

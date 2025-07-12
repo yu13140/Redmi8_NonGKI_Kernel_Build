@@ -619,6 +619,19 @@ jobs:
 
           patch -p1 < susfs_upgrade_to_159.patch || true
 
+          # Upgrade 1.5.10
+          if grep -q "CONFIG_KSU" "fs/exec.c"; then
+            cp /tmp/Patches/Patch/susfs_upgrade_to_1510_${{ env.KERNEL_VERSION }}.patch ./
+            patch -p1 < susfs_upgrade_to_1510_${{ env.KERNEL_VERSION }}.patch || true
+            echo "Detected no-kprobe hook, use no-kprobe patch to update 1.5.10."
+          elif [[ "${{ env.KERNEL_VERSION }}" == "5.4" ]]; then
+            cp /tmp/Patches/Patch/susfs_upgrade_to_1510_5.4_kprobe.patch ./
+            patch -p1 < susfs_upgrade_to_1510_5.4_kprobe.patch || true
+            echo "Cannot detected no-kprobe hook in kernel 5.4, use kprobe patch to update 1.5.10."
+          else
+            echo "kernel version<5.4 cannot use kprobe patch to update 1.5.10."
+          fi
+
           # Extra SUSFS Patch
           # cp NonGKI_Kernel_Patches/[patch_folder]/[patch_file].patch ./
 

@@ -210,6 +210,18 @@ Github放弃了Ubuntu 20.04，若你有需求，或者使用Clang Proton，请�
     - https://gitlab.com/simonpunk/susfs4ksu/-/commit/072a1b42bf323439c71c045a389f362f39caffe0
     - https://gitlab.com/simonpunk/susfs4ksu/-/commit/a26ba8380e1d10b2169b8148967c4f5108c2a3f7
 
+- **Patch/susfs_upgrade_to_1510_X_X.patch**
+  - 变量：(env文件)SUSFS_UPDATE -> true
+  - 对停止更新的Non-GKI设备的SuSFS进行更新，从v1.5.9更新至v1.5.10
+  - 参考：
+    - https://gitlab.com/simonpunk/susfs4ksu/-/commit/756e48167a71cdc757d7c3e5a1d4fc329714dc37
+    - https://gitlab.com/simonpunk/susfs4ksu/-/commit/7fce87f6d0a4dbc67aeb4e01e37a00eecb940bdf
+    - https://gitlab.com/simonpunk/susfs4ksu/-/commit/650d9c1ba08c17bc0bb86ed19d8c8ae319f400ad
+    - https://gitlab.com/simonpunk/susfs4ksu/-/commit/900b35c223529337681d8a36b9123858fd0da345
+    - https://gitlab.com/simonpunk/susfs4ksu/-/commit/0e5081e1a2fc93d0ba1e87091ecdca006e3cd639
+    - https://gitlab.com/simonpunk/susfs4ksu/-/commit/a92aa588cb1e2163e0d9fe7dd969d012f51654b2
+    - https://gitlab.com/simonpunk/susfs4ksu/-/commit/e418485fc2694900b5cc8fa44cd98d194fb6ffa7
+    
 - **Patch/set_memory_to_49_and_low.patch**
   - 变量：KPM_ENABLE -> true
   - 用于对内核版本≤4.9的设备移植set_memory功能的补丁文件，因为缺少大量测试，因此只作为测试补丁，且该补丁仅用于需要使用SukiSU-Ultra的KPM功能的情况下

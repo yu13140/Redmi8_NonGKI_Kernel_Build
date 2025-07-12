@@ -210,7 +210,19 @@ Below is an introduction to the patches included in the Patches directory:
         - https://gitlab.com/simonpunk/susfs4ksu/-/commit/10f3cbdc26cad49094572e23bb62857e056a805c
         - https://gitlab.com/simonpunk/susfs4ksu/-/commit/072a1b42bf323439c71c045a389f362f39caffe0
         - https://gitlab.com/simonpunk/susfs4ksu/-/commit/a26ba8380e1d10b2169b8148967c4f5108c2a3f7
-    
+
+- **Patch/susfs_upgrade_to_1510_X_X.patch**
+    - Variable: (env file) SUSFS_UPDATE -> true
+    - Updates SuSFS from v1.5.9 to v1.5.10 for Non-GKI devices that have stopped receiving updates.
+    - References:
+        - https://gitlab.com/simonpunk/susfs4ksu/-/commit/756e48167a71cdc757d7c3e5a1d4fc329714dc37
+        - https://gitlab.com/simonpunk/susfs4ksu/-/commit/7fce87f6d0a4dbc67aeb4e01e37a00eecb940bdf
+        - https://gitlab.com/simonpunk/susfs4ksu/-/commit/650d9c1ba08c17bc0bb86ed19d8c8ae319f400ad
+        - https://gitlab.com/simonpunk/susfs4ksu/-/commit/900b35c223529337681d8a36b9123858fd0da345
+        - https://gitlab.com/simonpunk/susfs4ksu/-/commit/0e5081e1a2fc93d0ba1e87091ecdca006e3cd639
+        - https://gitlab.com/simonpunk/susfs4ksu/-/commit/a92aa588cb1e2163e0d9fe7dd969d012f51654b2
+        - https://gitlab.com/simonpunk/susfs4ksu/-/commit/e418485fc2694900b5cc8fa44cd98d194fb6ffa7
+        
 - **Patch/set_memory_to_49_and_low.patch**
     - Requires **manual** execution.
     - A patch file for backporting the set_memory function to devices with kernel versions ≤ 4.9. Due to a lack of extensive testing, it's considered a test patch only and should only be used when the KPM function of SukiSU-Ultra is required.

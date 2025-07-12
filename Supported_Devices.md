@@ -4,7 +4,7 @@
 | 一加 8  | All | instantnoodle | 4.19/ppajda/XTD | OxygenOS/ColorOS 13.1 | 13 | AnyKernel3 | Magic | ✅ | ❌ | ✅ | ❌ | ❌ | Stable |  
 | 一加 8  | All | instantnoodle | 4.19/Nameless/Nameless | Nameless 15 | 15 | AnyKernel3 | rsuntk | ✅ | ❌ | ❌ | ❌ | ❌ | Stable |  
 | 一加 8  | All | instantnoodle | 4.19/Rohail33/Realking | OxygenOS/ColorOS 13.1 | 13 | AnyKernel3 | SukiSU(U) | ✅ | ❌ | ❌ | ❌ | ✅ | Suspend |  
-| 小米 MIX2S  | All | polaris | 4.9/EvoX/EvoX | Evolution X 10.6 | 15 | AnyKernel3 | SukiSU(U) | ✅ | ❌ | ❌ | ✅ | ✅ | Stable |  
+| 小米 Mix2s  | All | polaris | 4.9/Evolution-X-Devices/sdm845 | Evolution X 10.X | 15 | AnyKernel3 | SukiSU(U) | ✅ | ❌ | ❌ | ✅ | ✅ | Stable |  
 | 红米 K20 Pro  | All | raphael | 4.14/SOVIET-ANDROID/SOVIET-STAR-OSS | Based-AOSP | 15 | AnyKernel3 | rsuntk | ✅ | ❌ | ✅ | ❌ | ❌ | Stable |  
 | 红米 Note 4X  | All | mido | 4.9/RaidenShogunSeggs/(Nothing) | Based-AOSP | 13 | AnyKernel3 | Next | ✅ | ❌ | ❌ | ❌ | ❌ | Suspend |  
 | 黑鲨 4 | All | penrose | 4.19/DtHnAme/(Nothing) | MIUI/JoyUI 12 | 11 | AnyKernel3 | rsuntk | ❌ | ❌ | ❌ | ❌ | ❌ | Stable |  
@@ -21,16 +21,16 @@
 | 小米 8 | All | dipper | 4.9/MingBeifen/(Nothing) | MIUI 12 | 10 | AnyKernel3 | rsuntk | ✅ | ❌ | ❌ | ❌ | ❌ | Suspend |  
 | 小米 6 | All | sagit | 4.4/Backup-Gits/sagit_miui-r | MIUI 12 | 11 | AnyKernel3 | rsuntk | ❌ | ❌ | ❌ | ❌ | ❌ | Suspend |  
 | 小米 8 | All | dipper | 4.9/negrroo/Lawrun | MIUI 12 | 10 | AnyKernel3 | rsuntk | ❌ | ❌ | ❌ | ❌ | ❌ | Suspend |  
-| 小米 MIX2 | All | chiron | 4.4/kangdom/placeholder | MIUI 13 | 11 | AnyKernel3 | SukiSU(U) | ❌ | ❌ | ❌ | ❌ | ❌ | Suspend |  
+| 小米 Mix2 | All | chiron | 4.4/kangdom/placeholder | MIUI 13 | 11 | AnyKernel3 | SukiSU(U) | ❌ | ❌ | ❌ | ❌ | ❌ | Suspend |  
 | 一加 9 Pro | All | lemonadep | 5.4/brickport-devs/lily | OxygenOS/ColorOS 11 | 11 | AnyKernel3 | rsuntk | ❌ | ❌ | ❌ | ❌ | ❌ | Suspend |  
 | 一加 9 Pro | All | lemonadep | 5.4/kristofpetho/omega | OxygenOS/ColorOS 11 | 11 | AnyKernel3 | rsuntk | ❌ | ❌ | ❌ | ❌ | ❌ | Suspend |  
 | 红米 Note8 Pro | All | begonia | 4.14/Nova-Kernels/Nova-miui | MIUI 12.5 | 11 | AnyKernel3 | SukiSU(U) | ✅ | ❌ | ❌ | ❌ | ❌ | Suspend |  
 | OPPO K10 活力版 | CN | PERM10 | 5.4/fangkuaixiaoqia/官方内核 | ColorOS 14 | 14 | AnyKernel3 | rsuntk | ❌ | ❌ | ❌ | ❌ | ❌ | Suspend |  
-| 红米 K40 Gaming | All | ares | 4.14/Tkpointz/aresin | HyperOS | 13 | AnyKernel3 | rsuntk | ✅ | ❌ | ❌ | ❌ | ❌ | Suspend |  
+| 红米 K40 Gaming | All | ares | 4.14/Tkpointz/aresin | HyperOS | 13 | AnyKernel3 | rsuntk | ✅ | ❌ | ❌ | ❌ | ❌ | Beta |  
 | 红米 K40 Gaming | All | ares | 4.14/AbzRaider/(Nothing) | MIUI 13 | 12 | AnyKernel3 | rsuntk | ✅ | ❌ | ❌ | ❌ | ❌ | Suspend |  
 | 红米 Note 12 Pro 5G | CN | ruby | 4.19/qiangua2460/AlphaDroid | AlphaDroid 15.1 | 15 | AnyKernel3 | rsuntk | ❌ | ❌ | ❌ | ❌ | ❌ | Suspend |  
 | 红米 8 | All | olive | 4.19/yu13140/mi439 | Based-AOSP | 15 | AnyKernel3 | SukiSU(U) | ✅ | ❌ | ✅ | ✅ | ✅ | Stable | 
-| 红米 Note 10 Pro | CN | chopin | 4.14/ChopinKernels/chopin_android_T | MIUI 13 | 13 | AnyKernel3 | rsuntk | ✅ | ❌ | ❌ | ❌ | ❌ | Suspend |  
+| 红米 Note 10 Pro | CN | chopin | 4.14/ChopinKernels/chopin_android_T | MIUI 13 | 13 | AnyKernel3 | rsuntk | ✅ | ❌ | ❌ | ❌ | ❌ | Beta |  
 
 特别说明：
   - 我们提供的KernelSU分支包括：[Next(❌)](https://github.com/KernelSU-Next/KernelSU-Next)、[Magic](https://github.com/backslashxx/KernelSU)、[rsuntk](https://github.com/rsuntk/KernelSU)、[lightsummer233](https://github.com/lightsummer233/KernelSU)、[酷友二创-SukiSU-Ultra](https://github.com/ShirkNeko/SukiSU-Ultra)、[SukiSU](https://github.com/ShirkNeko/KernelSU)
